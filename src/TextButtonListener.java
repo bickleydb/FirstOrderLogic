@@ -19,8 +19,14 @@ public class TextButtonListener implements ActionListener {
 		if (pressed.getName().equals("enter")){
 			JTextArea compOutput = gui.out;
 			JTextField in = gui.texts;
-			compOutput.setText(compOutput.getText()+"\n"+in.getText());
-			in.setText("Enter Your Statement Here");
+			String toAdd = in.getText();
+			if(toAdd.indexOf("Enter Your Statement Here") != -1)
+				return;
+			
+			
+			String feedback = "\n     Nice Try!\r\n";
+			compOutput.setText(compOutput.getText()+"\n"+in.getText()+ feedback);
+			in.setText("Enter Your Statement Here\t");
 			
 			
 			System.out.println(compOutput.getLineCount());

@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -11,16 +12,20 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 
 public class ProgramGui extends JFrame{
 	
 	private TextButtonListener text;
+	private InputDocumentListener heyListen;
 	public JTextField texts;
 	public JTextArea out;
 	
 	public ProgramGui() {
 		text = new TextButtonListener(this);
+		heyListen = new InputDocumentListener(this);
 		this.setSize(500, 500);
 		this.setLayout(new BorderLayout());
 		createRelationPanel();
@@ -59,7 +64,7 @@ public class ProgramGui extends JFrame{
 		
 		private void createCharacterPanel() {
 			JPanel chars = new JPanel();
-			chars.setLayout(new BoxLayout(chars,BoxLayout.Y_AXIS));
+			chars.setLayout(new GridLayout(0,1));
 			JLabel symbols = new JLabel("Symbols");
 			chars.add(symbols);
 			
@@ -107,6 +112,10 @@ public class ProgramGui extends JFrame{
 			y.setName(Character.toString(Constants.Y));
 			xPrime.setName(Constants.X_PRIME);
 			yPrime.setName(Constants.Y_PRIME);
+			
+			
+			
+			
 		
 			chars.setBorder(BorderFactory.createDashedBorder(Color.RED));
 			this.add(chars,BorderLayout.EAST);
@@ -117,7 +126,10 @@ public class ProgramGui extends JFrame{
 		private void createUserInputPanel() {
 			JPanel input = new JPanel();
 			input.setLayout(new BoxLayout(input,BoxLayout.X_AXIS));
-			texts = new JTextField("Enter Your Statement Here",40);
+			texts = new JTextField("Enter Your Statement Here\r",40);
+			texts.setEditable(true);
+			Document editing = texts.getDocument();
+			editing.addDocumentListener(heyListen);
 			JButton send = new JButton("ENTER");
 			send.setName("enter");
 			send.addActionListener(text);
@@ -135,9 +147,12 @@ public class ProgramGui extends JFrame{
 			JLabel outputName = new JLabel("Output");
 			output.add(outputName,BorderLayout.NORTH);
 			output.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-			out = new JTextArea();
+			out = new JTextArea(100,100);
 			JScrollPane toScroll = new JScrollPane(out);
+			toScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 			output.add(toScroll, BorderLayout.EAST);
+			toScroll.setSize(20, 200);
+			toScroll.setSize(100,100);
 			out.setEditable(false);
 			output.add(out);
 			this.add(output,BorderLayout.CENTER);
@@ -146,5 +161,17 @@ public class ProgramGui extends JFrame{
 	
 	public static void main(String[] args) {
 		ProgramGui gui = new ProgramGui();
+	}
+
+	public void removeInput() {
+		System.out.println("REMOVE");
+		Document delete = texts.getDocument();
+		try {
+			delete.remove(0,delete.getLength());
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 }
