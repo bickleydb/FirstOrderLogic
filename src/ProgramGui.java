@@ -42,14 +42,26 @@ public class ProgramGui extends JFrame{
 			chars.setLayout(new BoxLayout(chars,BoxLayout.Y_AXIS));
 			JLabel symbols = new JLabel("Symbols");
 			chars.add(symbols);
-			JButton forAll = new JButton(Character.toString('\u2200'));
+			JButton forAll = new JButton(Character.toString(Constants.FOR_ALL));
 			chars.add(forAll);
-			JButton thereExists = new JButton(Character.toString('\u2203'));
+			JButton thereExists = new JButton(Character.toString(Constants.THERE_EXISTS));
 			chars.add(thereExists);
-			JButton and = new JButton(Character.toString('\u2227'));
+			JButton and = new JButton(Character.toString(Constants.AND));
 			chars.add(and);
-			JButton or = new JButton(Character.toString('\u2228'));
+			JButton or = new JButton(Character.toString(Constants.OR));
 			chars.add(or);
+			JButton impliles = new JButton(Character.toString(Constants.IMPLIES));
+			chars.add(impliles);
+			JButton iff = new JButton(Character.toString(Constants.IFF));
+			chars.add(iff);
+			JButton x = new JButton(Character.toString(Constants.X));
+			chars.add(x);
+			JButton y = new JButton(Character.toString(Constants.Y));
+			chars.add(y);
+			JButton xPrime = new JButton(Constants.X_PRIME);
+			chars.add(xPrime);
+			JButton yPrime = new JButton(Constants.Y_PRIME);
+			chars.add(yPrime);
 			this.add(chars,BorderLayout.EAST);
 		}
 		
