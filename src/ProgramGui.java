@@ -8,6 +8,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -16,6 +17,7 @@ public class ProgramGui extends JFrame{
 	
 	private TextButtonListener text;
 	public JTextField texts;
+	public JTextArea out;
 	
 	public ProgramGui() {
 		text = new TextButtonListener(this);
@@ -30,21 +32,28 @@ public class ProgramGui extends JFrame{
 		
 		private void createRelationPanel() {
 			JPanel pane = new JPanel();
+
 			pane.setLayout(new BoxLayout(pane,BoxLayout.Y_AXIS));
-			JLabel relations = new JLabel ("Relations");
-			pane.add(relations);
-			String[] stuff = {Character.toString('\u2200'),"b","c","d"};
-			JComboBox<String> tester = new JComboBox<String>(stuff);
-			tester.setEditable(false);
-			tester.setSize(100,100);
-			tester.setName("Students");
-			JLabel stu = new JLabel("Students");
-			pane.add(stu);
-			pane.add(tester);
-			JLabel teachers = new JLabel("Students");
-			pane.add(teachers);
-			JComboBox<String> what = new JComboBox<String>(new String[5]);
-			pane.add(what);
+			
+			JLabel label1 = new JLabel("Relations 1");
+			label1.setAlignmentX(CENTER_ALIGNMENT);
+			pane.add(label1);
+			
+			String[] opt0 = {"Relation 1","Relation 2","Relation 3"};
+			
+			JComboBox<String> relations1 = new JComboBox<String>(opt0);
+			relations1.setEditable(false);
+			relations1.setName("Relations 1");
+			
+			pane.add(relations1);
+			
+			JLabel label2 = new JLabel("Relations 2");
+			label2.setAlignmentX(CENTER_ALIGNMENT);
+			pane.add(label2);
+			
+			String[] opt1 = {"Relation 4","Relation 5","Relation 6"};
+			JComboBox<String> relations2 = new JComboBox<String>(opt1);
+			pane.add(relations2);
 			this.add(pane,BorderLayout.WEST);
 		}
 		
@@ -109,11 +118,11 @@ public class ProgramGui extends JFrame{
 			JPanel input = new JPanel();
 			input.setLayout(new BoxLayout(input,BoxLayout.X_AXIS));
 			texts = new JTextField("Enter Your Statement Here",40);
-			String test = texts.getText();
 			JButton send = new JButton("ENTER");
+			send.setName("enter");
+			send.addActionListener(text);
 			input.add(texts);
 			input.add(send);
-			//texts.set
 			this.add(input,BorderLayout.SOUTH);
 			
 			
@@ -122,42 +131,18 @@ public class ProgramGui extends JFrame{
 		
 		private void createOutputPanel() {
 			JPanel output = new JPanel();
-			JTextArea out = new JTextArea(5,20);
-			out.setSize(1000,1000);
-			out.setText("asdf");
+			output.setLayout(new BorderLayout());
+			JLabel outputName = new JLabel("Output");
+			output.add(outputName,BorderLayout.NORTH);
+			output.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+			out = new JTextArea();
+			JScrollPane toScroll = new JScrollPane(out);
+			output.add(toScroll, BorderLayout.EAST);
 			out.setEditable(false);
 			output.add(out);
-			
 			this.add(output,BorderLayout.CENTER);
-			
-			
-		
 		}
 		
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	public static void main(String[] args) {
 		ProgramGui gui = new ProgramGui();
