@@ -1,5 +1,7 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -12,9 +14,11 @@ import javax.swing.JTextField;
 
 public class ProgramGui extends JFrame{
 	
+	private TextButtonListener text;
+	public JTextField texts;
 	
 	public ProgramGui() {
-	
+		text = new TextButtonListener(this);
 		this.setSize(500, 500);
 		this.setLayout(new BorderLayout());
 		createRelationPanel();
@@ -31,9 +35,16 @@ public class ProgramGui extends JFrame{
 			pane.add(relations);
 			String[] stuff = {Character.toString('\u2200'),"b","c","d"};
 			JComboBox<String> tester = new JComboBox<String>(stuff);
+			tester.setEditable(false);
 			tester.setSize(100,100);
 			tester.setName("Students");
+			JLabel stu = new JLabel("Students");
+			pane.add(stu);
 			pane.add(tester);
+			JLabel teachers = new JLabel("Students");
+			pane.add(teachers);
+			JComboBox<String> what = new JComboBox<String>(new String[5]);
+			pane.add(what);
 			this.add(pane,BorderLayout.WEST);
 		}
 		
@@ -42,33 +53,62 @@ public class ProgramGui extends JFrame{
 			chars.setLayout(new BoxLayout(chars,BoxLayout.Y_AXIS));
 			JLabel symbols = new JLabel("Symbols");
 			chars.add(symbols);
+			
+			
 			JButton forAll = new JButton(Character.toString(Constants.FOR_ALL));
-			chars.add(forAll);
 			JButton thereExists = new JButton(Character.toString(Constants.THERE_EXISTS));
-			chars.add(thereExists);
 			JButton and = new JButton(Character.toString(Constants.AND));
-			chars.add(and);
 			JButton or = new JButton(Character.toString(Constants.OR));
-			chars.add(or);
 			JButton impliles = new JButton(Character.toString(Constants.IMPLIES));
-			chars.add(impliles);
 			JButton iff = new JButton(Character.toString(Constants.IFF));
-			chars.add(iff);
 			JButton x = new JButton(Character.toString(Constants.X));
-			chars.add(x);
 			JButton y = new JButton(Character.toString(Constants.Y));
-			chars.add(y);
 			JButton xPrime = new JButton(Constants.X_PRIME);
-			chars.add(xPrime);
 			JButton yPrime = new JButton(Constants.Y_PRIME);
+			
+			chars.add(forAll);
+			chars.add(thereExists);
+			chars.add(and);
+			chars.add(or);
+			chars.add(impliles);
+			chars.add(iff);
+			chars.add(x);
+			chars.add(y);
+			chars.add(xPrime);
 			chars.add(yPrime);
+			
+			forAll.addActionListener(text);
+			thereExists.addActionListener(text);
+			and.addActionListener(text);
+			or.addActionListener(text);
+			impliles.addActionListener(text);
+			iff.addActionListener(text);
+			x.addActionListener(text);
+			y.addActionListener(text);
+			xPrime.addActionListener(text);
+			yPrime.addActionListener(text);
+			
+			forAll.setName(Character.toString(Constants.FOR_ALL));
+			thereExists.setName(Character.toString(Constants.THERE_EXISTS));
+			and.setName(Character.toString(Constants.AND));
+			or.setName(Character.toString(Constants.OR));
+			impliles.setName(Character.toString(Constants.IMPLIES));
+			iff.setName(Character.toString(Constants.IFF));
+			x.setName(Character.toString(Constants.X));
+			y.setName(Character.toString(Constants.Y));
+			xPrime.setName(Constants.X_PRIME);
+			yPrime.setName(Constants.Y_PRIME);
+		
+			chars.setBorder(BorderFactory.createDashedBorder(Color.RED));
 			this.add(chars,BorderLayout.EAST);
 		}
+		
+		
 		
 		private void createUserInputPanel() {
 			JPanel input = new JPanel();
 			input.setLayout(new BoxLayout(input,BoxLayout.X_AXIS));
-			JTextField texts = new JTextField("WHEEOOO",40);
+			texts = new JTextField("Enter Your Statement Here",40);
 			String test = texts.getText();
 			JButton send = new JButton("ENTER");
 			input.add(texts);
