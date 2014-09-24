@@ -26,6 +26,7 @@ public class ProgramGui extends JFrame{
 	public JTextField texts;
 	public JTextArea out;
 	public XMLReader reader;
+	public JComboBox<String> constants;
 	
 	public ProgramGui() {
 		text = new TextButtonListener(this);
@@ -46,34 +47,54 @@ public class ProgramGui extends JFrame{
 
 			pane.setLayout(new BoxLayout(pane,BoxLayout.Y_AXIS));
 			
-			JLabel label1 = new JLabel("Predicates");
-			label1.setAlignmentX(CENTER_ALIGNMENT);
-			pane.add(label1);
+			JLabel predicateLabel = new JLabel("Predicates");
+			predicateLabel.setAlignmentX(CENTER_ALIGNMENT);
+			pane.add(predicateLabel);
+			/*try {
+				reader.getContents();
+			} catch (XMLStreamException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}*/
 			String predicatesSet = "";
 			try {
 				predicatesSet = reader.getPredicates();
 			} catch (XMLStreamException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			String[] predicatePossibles = XMLReader.parseArray(predicatesSet);
 			for(int i = 0; i < predicatePossibles.length; i++)
-				System.out.println(predicatePossibles[i]);
+				//System.out.println(predicatePossibles[i]);
 			predicates = new JComboBox<String>(predicatePossibles);
 			predicates.addActionListener(placePredicate);
 			predicates.setEditable(false);
 			predicates.setName("Predicates");
-			
 			pane.add(predicates);
 			
-			JLabel label2 = new JLabel("Constants");
-			label2.setAlignmentX(CENTER_ALIGNMENT);
-			pane.add(label2);
+			JLabel constantLabel = new JLabel("Constants");
+			constantLabel.setAlignmentX(CENTER_ALIGNMENT);
+			pane.add(constantLabel);
 			
-			String[] opt1 = {"Relation 4","Relation 5","Relation 6"};
-			JComboBox<String> relations2 = new JComboBox<String>(opt1);
-			pane.add(relations2);
+			String constantSet = "";
+			try {
+				constantSet = reader.getConstants();
+				//System.out.println(constants);
+			} catch (XMLStreamException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			String[] opt1 = reader.parseArray(constantSet);
+			constants = new JComboBox<String>(opt1);
+			constants.addActionListener(placePredicate);
+			pane.add(constants);
 			this.add(pane,BorderLayout.WEST);
+			
+//			try {
+//				reader.getContents();
+//			} catch (XMLStreamException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
 		
 		private void createCharacterPanel() {

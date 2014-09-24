@@ -26,9 +26,10 @@ public class InputDocumentListener implements DocumentListener {
 		try {
 			text = doc.getText(0, doc.getLength());
 				gui.removeInput();
-		} catch (BadLocationException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Caught");
+			//e.printStackTrace();
 		}
 	}
 

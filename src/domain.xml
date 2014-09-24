@@ -1,15 +1,15 @@
-<Domain>
-	<University>
-		<Predicates>
-			<Function name="Semester" args = "1" > </Function>
-			<Function name = "Takes" args = "3" > </Function>
-		</Predicates>
-		<Constants>
-			<class name = "CSE 174" > </class>
-			<class name = "ENG 111" > </class>
-			<class name = "CSE 271" > </class>
-			<semester name = "Fall 2014" > </semester> 
-			<semester name = "Spring 2015" > </semester>
-		</Constants>
-	</University>
+<Domain name = "University" size = "6">
+	<Predicates name = "predicates" size = "2">
+		<Function name="Semester" args = "1" > </Function>
+		<Function name = "Takes" args = "3" > </Function>
+		<Function name = "Test" args = "20"> </Function>
+	</Predicates>
+	<Constants name = "constants" size = "5">
+		<class name = "CSE 174" > </class>
+		<class name = "ENG 111" > </class>
+		<class name = "CSE 271" > </class>
+		<semester name = "Fall 2014" > </semester> 
+		<semester name = "Spring 2015" > </semester>
+	</Constants>
+	<endoffile></endoffile>
 </Domain>

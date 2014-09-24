@@ -27,6 +27,67 @@ public class XMLReader {
 			e.printStackTrace();
 		}
 	}
+	
+	public String getContents() throws XMLStreamException {
+
+		int currentEvent;
+		String rtn = "";
+		
+		while(reader.hasNext()) {
+			currentEvent = reader.getEventType();
+			if(currentEvent == XMLStreamConstants.START_ELEMENT) {
+				String adding = reader.getAttributeValue(0)+ " " + reader.getAttributeName(1)+" ";
+				rtn = rtn + adding;
+				System.out.println(rtn);
+			}
+			reader.nextTag();
+		}
+		return rtn;
+		
+		
+	}
+	
+	public String getConstants() throws XMLStreamException {
+		int currentEvent;
+		String rtn = "";
+		boolean readInConstants = false;
+		
+		while (reader.hasNext()) {
+			currentEvent = reader.getEventType();
+			if (currentEvent == XMLStreamConstants.START_ELEMENT) {
+				String buildInformation = reader.getName().toString();
+				if  (buildInformation.equals("Constants")) {
+					readInConstants = !readInConstants;
+				}
+				if  (buildInformation.equals("endoffile"))
+					return rtn;
+				if (readInConstants == true) {
+					if (reader.getAttributeCount() != 0) {
+						buildInformation = reader.getAttributeValue(0);
+						if(buildInformation.equals("constants")) {
+							buildInformation = "";
+						}else{
+							buildInformation = buildInformation + "052015";
+						}
+						rtn = rtn + buildInformation;
+						System.out.println(rtn);
+					}
+				}
+			}
+			
+			if (currentEvent == XMLStreamConstants.START_DOCUMENT) {
+				reader.next();
+			}
+			if (currentEvent == XMLStreamConstants.END_DOCUMENT) {
+				reader.close();
+				return "";
+			}
+				reader.nextTag();
+			
+		}
+		return "";
+		
+	}
 
 	public String getPredicates() throws XMLStreamException {
 		int currentEvent = reader.getEventType();
@@ -47,7 +108,7 @@ public class XMLReader {
 					if (reader.getAttributeCount() != 0) {
 						buildInformation = reader.getAttributeValue(0);
 						buildInformation = buildInformation + "(";
-						System.out.println(reader.getAttributeValue(0));
+						//System.out.println(reader.getAttributeValue(0));
 						int numOfParams = Integer.parseInt(reader
 								.getAttributeValue(1));
 						char startingParam = (char) ((int) 'z' - numOfParams);
@@ -71,7 +132,6 @@ public class XMLReader {
 			index = reader.nextTag();
 
 		}
-
 		return "";
 	}
 
@@ -80,10 +140,10 @@ public class XMLReader {
 		int totalSize = 0;
 		while(copy.indexOf("052015")!= -1) {
 			copy = copy.substring(copy.indexOf("052015")+6, copy.length());
-			System.out.println("Copy:" + copy);
+			//System.out.println("Copy:" + copy);
 			totalSize++;
 		}
-		System.out.println(totalSize);
+		//System.out.println(totalSize);
 		String[] rtn = new String[totalSize];
 		int rtnIndex = 0;
 		copy = predicates;
@@ -92,7 +152,7 @@ public class XMLReader {
 			rtn[rtnIndex] = add;
 			rtnIndex++;
 			copy = copy.substring(copy.indexOf("052015")+6, copy.length());
-			System.out.println(copy);
+			//System.out.println(copy);
 		}
 		return rtn;
 	}

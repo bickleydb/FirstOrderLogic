@@ -24,6 +24,16 @@ public class PredicateConstantListener implements ActionListener {
 				userIn = "";
 			userIn = userIn + current;
 			in.setText(userIn);
+		}
+		if (pressed.equals(gui.constants)) {
+			String current = (String) gui.constants.getSelectedItem() + " ";
+			JTextField in = gui.texts;
+			String userIn = in.getText();
+			if (userIn.indexOf("Enter Your Statement Here") != -1)
+				userIn = "";
+			userIn = userIn + current;
+			in.setText(userIn);
+			
 			
 		}
 	}
