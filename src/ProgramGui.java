@@ -14,18 +14,24 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import javax.xml.stream.XMLStreamException;
 
 
 public class ProgramGui extends JFrame{
 	
 	private TextButtonListener text;
 	private InputDocumentListener heyListen;
+	private PredicateConstantListener placePredicate;
+	public JComboBox<String> predicates;
 	public JTextField texts;
 	public JTextArea out;
+	public XMLReader reader;
 	
 	public ProgramGui() {
 		text = new TextButtonListener(this);
 		heyListen = new InputDocumentListener(this);
+		reader = new XMLReader();
+		placePredicate = new PredicateConstantListener(this);
 		this.setSize(500, 500);
 		this.setLayout(new BorderLayout());
 		createRelationPanel();
@@ -40,19 +46,27 @@ public class ProgramGui extends JFrame{
 
 			pane.setLayout(new BoxLayout(pane,BoxLayout.Y_AXIS));
 			
-			JLabel label1 = new JLabel("Relations 1");
+			JLabel label1 = new JLabel("Predicates");
 			label1.setAlignmentX(CENTER_ALIGNMENT);
 			pane.add(label1);
+			String predicatesSet = "";
+			try {
+				predicatesSet = reader.getPredicates();
+			} catch (XMLStreamException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			String[] predicatePossibles = XMLReader.parseArray(predicatesSet);
+			for(int i = 0; i < predicatePossibles.length; i++)
+				System.out.println(predicatePossibles[i]);
+			predicates = new JComboBox<String>(predicatePossibles);
+			predicates.addActionListener(placePredicate);
+			predicates.setEditable(false);
+			predicates.setName("Predicates");
 			
-			String[] opt0 = {"Relation 1","Relation 2","Relation 3"};
+			pane.add(predicates);
 			
-			JComboBox<String> relations1 = new JComboBox<String>(opt0);
-			relations1.setEditable(false);
-			relations1.setName("Relations 1");
-			
-			pane.add(relations1);
-			
-			JLabel label2 = new JLabel("Relations 2");
+			JLabel label2 = new JLabel("Constants");
 			label2.setAlignmentX(CENTER_ALIGNMENT);
 			pane.add(label2);
 			
