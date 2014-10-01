@@ -16,6 +16,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.xml.stream.XMLStreamException;
 
+import org.w3c.dom.NodeList;
+
 
 public class ProgramGui extends JFrame{
 	
@@ -50,22 +52,10 @@ public class ProgramGui extends JFrame{
 			JLabel predicateLabel = new JLabel("Predicates");
 			predicateLabel.setAlignmentX(CENTER_ALIGNMENT);
 			pane.add(predicateLabel);
-			/*try {
-				reader.getContents();
-			} catch (XMLStreamException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
-			String predicatesSet = "";
-			try {
-				predicatesSet = reader.getPredicates();
-			} catch (XMLStreamException e) {
-				e.printStackTrace();
-			}
-			String[] predicatePossibles = XMLReader.parseArray(predicatesSet);
-			for(int i = 0; i < predicatePossibles.length; i++)
-				//System.out.println(predicatePossibles[i]);
-			predicates = new JComboBox<String>(predicatePossibles);
+			NodeList[] everything = reader.getContents();
+			System.out.println(everything);
+			String predicate = reader.decodeForName(everything[0], "predicate");	
+			predicates = new JComboBox<String>(reader.toArr(predicate));
 			predicates.addActionListener(placePredicate);
 			predicates.setEditable(false);
 			predicates.setName("Predicates");
@@ -76,15 +66,10 @@ public class ProgramGui extends JFrame{
 			pane.add(constantLabel);
 			
 			String constantSet = "";
-			try {
-				constantSet = reader.getConstants();
-				//System.out.println(constants);
-			} catch (XMLStreamException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			String[] opt1 = reader.parseArray(constantSet);
-			constants = new JComboBox<String>(opt1);
+			
+			
+			String pred = reader.decodeForName(everything[1], "constant");
+			constants = new JComboBox<String>(reader.toArr(pred));
 			constants.addActionListener(placePredicate);
 			pane.add(constants);
 			this.add(pane,BorderLayout.WEST);

@@ -1,142 +1,79 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 public class XMLReader {
 	File toRead;
-	FileInputStream inputStream;
-	XMLInputFactory factory;
-	XMLStreamReader reader;
+	DocumentBuilderFactory dbFact;
+	DocumentBuilder dBuilder;
+	Document doc;
 
 	public XMLReader() {
 		toRead = new File("src/domain.xml");
+		dbFact = DocumentBuilderFactory.newInstance();
 		try {
-			inputStream = new FileInputStream(toRead);
-		} catch (FileNotFoundException e) {
+			dBuilder = dbFact.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		factory = XMLInputFactory.newInstance();
 		try {
-			reader = factory.createXMLStreamReader(inputStream);
-		} catch (XMLStreamException e) {
+			doc = dBuilder.parse(toRead);
+		} catch (SAXException | IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	public String getContents() throws XMLStreamException {
 
-		int currentEvent;
+	public NodeList[] getContents() {
+		NodeList[] contents = new NodeList[2];
+		NodeList predicates = doc.getElementsByTagName("predicate");
+		System.out.println(predicates.getLength());
+		NodeList constants = doc.getElementsByTagName("constant");
+		contents[0] = predicates;
+		contents[1] = constants;
+		return contents;
+	}
+
+	public String decodeForName(NodeList input, String type) {
 		String rtn = "";
-		
-		while(reader.hasNext()) {
-			currentEvent = reader.getEventType();
-			if(currentEvent == XMLStreamConstants.START_ELEMENT) {
-				String adding = reader.getAttributeValue(0)+ " " + reader.getAttributeName(1)+" ";
-				rtn = rtn + adding;
-				System.out.println(rtn);
+		for (int i = 0; i < input.getLength(); i++) {
+			Node curNode = input.item(i);
+			Element cur = (Element) curNode;
+			if (curNode.getNodeName().equals(type)) {
+				rtn = rtn + cur.getAttribute("name");
+				if (type.equals("predicate")) {
+					int argNum = Integer.parseInt(cur.getAttribute("args"));
+					rtn = rtn + "(";
+					for (int a = 0; a < argNum - 1; a++) {
+						rtn = rtn + (char)('z' - a) + ",";
+					}
+					rtn = rtn + "z)";
+				}
+				rtn = rtn + "052015";
 			}
-			reader.nextTag();
 		}
+		System.out.println("RTN " + rtn);
 		return rtn;
-		
-		
 	}
 	
-	public String getConstants() throws XMLStreamException {
-		int currentEvent;
-		String rtn = "";
-		boolean readInConstants = false;
-		
-		while (reader.hasNext()) {
-			currentEvent = reader.getEventType();
-			if (currentEvent == XMLStreamConstants.START_ELEMENT) {
-				String buildInformation = reader.getName().toString();
-				if  (buildInformation.equals("Constants")) {
-					readInConstants = !readInConstants;
-				}
-				if  (buildInformation.equals("endoffile"))
-					return rtn;
-				if (readInConstants == true) {
-					if (reader.getAttributeCount() != 0) {
-						buildInformation = reader.getAttributeValue(0);
-						if(buildInformation.equals("constants")) {
-							buildInformation = "";
-						}else{
-							buildInformation = buildInformation + "052015";
-						}
-						rtn = rtn + buildInformation;
-						System.out.println(rtn);
-					}
-				}
-			}
-			
-			if (currentEvent == XMLStreamConstants.START_DOCUMENT) {
-				reader.next();
-			}
-			if (currentEvent == XMLStreamConstants.END_DOCUMENT) {
-				reader.close();
-				return "";
-			}
-				reader.nextTag();
-			
-		}
-		return "";
-		
-	}
-
-	public String getPredicates() throws XMLStreamException {
-		int currentEvent = reader.getEventType();
-		int index = 0;
-		String rtn = "";
-		int findingPredicates = 0;
-		while (reader.hasNext()) {
-			currentEvent = reader.getEventType();
-			if (currentEvent == XMLStreamConstants.START_ELEMENT) {
-				String buildInformation = reader.getName().toString();
-				if (buildInformation.equals("Predicates")
-						|| buildInformation.equals("Constants")) {
-					findingPredicates++;
-					if (findingPredicates == 2) {
-						return rtn;
-					}
-				} else {
-					if (reader.getAttributeCount() != 0) {
-						buildInformation = reader.getAttributeValue(0);
-						buildInformation = buildInformation + "(";
-						//System.out.println(reader.getAttributeValue(0));
-						int numOfParams = Integer.parseInt(reader
-								.getAttributeValue(1));
-						char startingParam = (char) ((int) 'z' - numOfParams);
-						for (int i = 0; i < numOfParams - 1; i++) {
-							char actualParam = (char) (startingParam + i);
-							buildInformation = buildInformation + actualParam
-									+ ",";
-						}
-						buildInformation = buildInformation + "z)052015";
-						rtn = rtn + buildInformation;
-					}
-				}
-			}
-			if (currentEvent == XMLStreamConstants.START_DOCUMENT) {
-				index = reader.next();
-			}
-			if (currentEvent == XMLStreamConstants.END_DOCUMENT) {
-				reader.close();
-				return "";
-			}
-			index = reader.nextTag();
-
-		}
-		return "";
-	}
-
-	public static String[] parseArray(String predicates) {
-		String copy = predicates;
+	public String[] toArr (String in) {
+		String copy = in;
 		int totalSize = 0;
 		while(copy.indexOf("052015")!= -1) {
 			copy = copy.substring(copy.indexOf("052015")+6, copy.length());
@@ -146,7 +83,7 @@ public class XMLReader {
 		//System.out.println(totalSize);
 		String[] rtn = new String[totalSize];
 		int rtnIndex = 0;
-		copy = predicates;
+		copy = in;
 		while(!copy.isEmpty()) {
 			String add = copy.substring(0, copy.indexOf("052015"));
 			rtn[rtnIndex] = add;
@@ -155,6 +92,10 @@ public class XMLReader {
 			//System.out.println(copy);
 		}
 		return rtn;
+		
 	}
+
+	
+	
 
 }
