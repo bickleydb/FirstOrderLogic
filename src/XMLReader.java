@@ -23,8 +23,8 @@ public class XMLReader {
 	DocumentBuilder dBuilder;
 	Document doc;
 
-	public XMLReader() {
-		toRead = new File("src/domain.xml");
+	public XMLReader(String fileName) {
+		toRead = new File(fileName);
 		dbFact = DocumentBuilderFactory.newInstance();
 		try {
 			dBuilder = dbFact.newDocumentBuilder();
@@ -43,11 +43,26 @@ public class XMLReader {
 	public NodeList[] getContents() {
 		NodeList[] contents = new NodeList[2];
 		NodeList predicates = doc.getElementsByTagName("predicate");
-		System.out.println(predicates.getLength());
+		//System.out.println(predicates.getLength());
 		NodeList constants = doc.getElementsByTagName("constant");
 		contents[0] = predicates;
 		contents[1] = constants;
 		return contents;
+	}
+	
+	public String getTruth () {
+		String rtn = "";
+		NodeList functions = doc.getElementsByTagName("function");
+		for(int i = 0; i < functions.getLength(); i++) {
+			Element ele = (Element)functions.item(i);
+			rtn = rtn + ele.getAttribute("name") + "052015";
+			NodeList truth = ele.getElementsByTagName("true");
+			for(int t = 0; t < truth.getLength(); t++) {
+				Element newTag = (Element)truth.item(t);
+				rtn = rtn+newTag.getAttribute("params")+"052015";
+			}
+		}
+		return rtn;
 	}
 
 	public String decodeForName(NodeList input, String type) {
@@ -68,7 +83,7 @@ public class XMLReader {
 				rtn = rtn + "052015";
 			}
 		}
-		System.out.println("RTN " + rtn);
+		//System.out.println("RTN " + rtn);
 		return rtn;
 	}
 	

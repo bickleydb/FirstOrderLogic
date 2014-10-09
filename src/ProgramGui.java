@@ -8,6 +8,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -24,17 +25,21 @@ public class ProgramGui extends JFrame{
 	private TextButtonListener text;
 	private InputDocumentListener heyListen;
 	private PredicateConstantListener placePredicate;
+	public LogicTest grader;
 	public JComboBox<String> predicates;
 	public JTextField texts;
 	public JTextArea out;
 	public XMLReader reader;
 	public JComboBox<String> constants;
+	public String fileName;
 	
 	public ProgramGui() {
 		text = new TextButtonListener(this);
 		heyListen = new InputDocumentListener(this);
-		reader = new XMLReader();
+		reader = new XMLReader("src/domain.xml");
+		grader = new LogicTest();
 		placePredicate = new PredicateConstantListener(this);
+		fileName = JOptionPane.showInputDialog(this,"What would you like your feedback saved to? Leave it empty if you don't care.");
 		this.setSize(500, 500);
 		this.setLayout(new BorderLayout());
 		createRelationPanel();
@@ -53,7 +58,7 @@ public class ProgramGui extends JFrame{
 			predicateLabel.setAlignmentX(CENTER_ALIGNMENT);
 			pane.add(predicateLabel);
 			NodeList[] everything = reader.getContents();
-			System.out.println(everything);
+			//System.out.println(everything);
 			String predicate = reader.decodeForName(everything[0], "predicate");	
 			predicates = new JComboBox<String>(reader.toArr(predicate));
 			predicates.addActionListener(placePredicate);
@@ -66,20 +71,12 @@ public class ProgramGui extends JFrame{
 			pane.add(constantLabel);
 			
 			String constantSet = "";
-			
-			
 			String pred = reader.decodeForName(everything[1], "constant");
 			constants = new JComboBox<String>(reader.toArr(pred));
 			constants.addActionListener(placePredicate);
 			pane.add(constants);
 			this.add(pane,BorderLayout.WEST);
-			
-//			try {
-//				reader.getContents();
-//			} catch (XMLStreamException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+
 		}
 		
 		private void createCharacterPanel() {
@@ -184,7 +181,7 @@ public class ProgramGui extends JFrame{
 	}
 
 	public void removeInput() {
-		System.out.println("REMOVE");
+		//System.out.println("REMOVE");
 		Document delete = texts.getDocument();
 		try {
 			delete.remove(0,delete.getLength());

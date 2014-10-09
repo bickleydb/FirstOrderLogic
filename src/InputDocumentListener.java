@@ -28,7 +28,7 @@ public class InputDocumentListener implements DocumentListener {
 				gui.removeInput();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			System.out.println("Caught");
+			//System.out.println("Caught");
 			//e.printStackTrace();
 		}
 	}

@@ -1,11 +1,12 @@
 <Domain>
 	<predicate name="Semester" args = "1" domain = "University"> </predicate>
 	<predicate name = "Takes" args = "3" domain = "University" > </predicate>
-	<predicate name = "Test" args = "20" domain = "University"> </predicate>
+	<predicate name = "Class" args = "1" domain = "University"> </predicate>
 	<constant name = "CSE 174" type = "class" domain = "University"> </constant>
 	<constant name = "ENG 111" type = "class" domain = "University"> </constant>
 	<constant name = "CSE 271" type = "class" domain = "University"> </constant>
 	<constant name = "Fall 2014" type = "semester" domain = "University"> </constant> 
 	<constant name = "Spring 2015" type = "semester" domain = "University"> </constant>
+	<constant name = "Students" type = "subject" domain = "University"> </constant>
 </Domain>
 

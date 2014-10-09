@@ -1,0 +1,21 @@
+<World>
+	<function name="Semester" args = "1" domain = "University">
+		<true params="Fall 2014"></true>
+		<true params="Spring 2015"></true>
+	</function>
+	
+	<function name = "Takes" args = "3" domain = "University" > 
+		<true params="Students, CSE 174"> </true>
+		<true params="Students, ENG 111"> </true>
+		<true params="Students, CSE 271"> </true>
+	</function>
+	
+	<function name = "Class" domain = "University">
+		<true params="CSE 174"></true>
+		<true params="ENG 111"></true>
+		<true params="CSE 271"></true>
+	</function>
+	
+	
+	
+</World>
