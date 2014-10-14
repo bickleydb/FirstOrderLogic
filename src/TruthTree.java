@@ -5,7 +5,7 @@ public class TruthTree {
 	public static void main(String[] args) {
 		TruthTree test = new TruthTree("World 1");
 		test.addFunction("Test");
-		test.addConstant("testestest", "Test");
+		test.addVariable("testestest", "Test","Banana");
 		test.addFunction("Hopefully this will work");
 		System.out.println(test);
 		
@@ -27,12 +27,14 @@ public class TruthTree {
 		return true;
 	}
 	
-	public boolean addConstant (String constantName, String functionName) {
+	public boolean addVariable (String variableName, String functionName, String domain) {
 		TruthNode function = null;
+		System.out.println("Adding: " + variableName);
+		System.out.println("Function: " + functionName);
 		for(int i = 0; i < root.nodes.length; i++) {
 			if(!(root.nodes[i] == null)) {
-				
 			if(root.nodes[i].name.equals(functionName))
+				System.out.println("Node name: " + root.nodes[i].name);
 				function = root.nodes[i];
 			}
 		}
@@ -43,11 +45,11 @@ public class TruthTree {
 			if(function.nodes[i] == null) {
 				break;
 			}
-			if(function.nodes[i].name.equals(constantName))
+			if(function.nodes[i].name.equals(variableName))
 				return false;
 		}
 		
-		function.addNode(new TruthNode(constantName,"constant","banana"));
+		function.addNode(new TruthNode(variableName,"variable",domain));
 		return true;
 	}
 	

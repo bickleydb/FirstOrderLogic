@@ -34,7 +34,18 @@ public class LogicTest {
 		for(int i = 0; i < func.length; i++) 
 			world.addFunction(func[i]);
 		
-		reader.getTruth();
+		String[] truths = reader.toArr(reader.getTruth(),true);
+		String functionName = "";
+		for(int t = 0; t < truths.length; t++) {
+			functionName = truths[t];
+			t++;
+			int numMore = Integer.parseInt(truths[t]);
+			System.err.println(numMore);
+			for(int i = t+1; i <= t+numMore; i++) {
+				System.out.println(world.addVariable(truths[i], functionName,""));
+			}
+			t = t+numMore+1;
+		}
 		return world;
 	}
 }

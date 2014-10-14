@@ -77,10 +77,16 @@ public class XMLReader {
 	public String getTruth () {
 		String rtn = "";
 		NodeList functions = doc.getElementsByTagName("function");
-		NodeList truth = doc.getElementsByTagName("true");
 		for(int i = 0; i < functions.getLength(); i++) {
 			Element ele = (Element)functions.item(i);
-			System.out.println(ele.getAttribute("name"));
+			NodeList truth = ele.getElementsByTagName("true");
+			rtn = rtn + ele.getAttribute("name") + "052015";
+			rtn = rtn + truth.getLength() + "052015";
+			for(int t = 0; t < truth.getLength(); t++) {
+				Element ele2 = (Element)truth.item(t);
+				rtn = rtn + ele2.getAttribute("params") + "052015";
+			}
+			rtn = rtn + "052015";
 			
 		}
 		return rtn;
