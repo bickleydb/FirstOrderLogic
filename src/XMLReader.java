@@ -50,17 +50,38 @@ public class XMLReader {
 		return contents;
 	}
 	
-	public String getTruth () {
+	public String getFunctions() {
 		String rtn = "";
 		NodeList functions = doc.getElementsByTagName("function");
 		for(int i = 0; i < functions.getLength(); i++) {
 			Element ele = (Element)functions.item(i);
-			rtn = rtn + ele.getAttribute("name") + "052015";
-			NodeList truth = ele.getElementsByTagName("true");
-			for(int t = 0; t < truth.getLength(); t++) {
-				Element newTag = (Element)truth.item(t);
-				rtn = rtn+newTag.getAttribute("params")+"052015";
-			}
+			rtn = rtn + ele.getAttribute("domain") + ":" + ele.getAttribute("name") + "052015";
+		}
+		return rtn;
+		
+	}
+	
+	public String getConstants() {
+		String rtn = "";
+		NodeList functions = doc.getElementsByTagName("constant");
+		for(int i = 0; i < functions.getLength(); i++) {
+			Element ele = (Element)functions.item(i);
+			rtn = rtn + ele.getAttribute("domain") + ":" + ele.getAttribute("name") + "052015";
+		}
+		return rtn;
+		
+		
+		
+	}
+	
+	public String getTruth () {
+		String rtn = "";
+		NodeList functions = doc.getElementsByTagName("function");
+		NodeList truth = doc.getElementsByTagName("true");
+		for(int i = 0; i < functions.getLength(); i++) {
+			Element ele = (Element)functions.item(i);
+			System.out.println(ele.getAttribute("name"));
+			
 		}
 		return rtn;
 	}
@@ -87,24 +108,24 @@ public class XMLReader {
 		return rtn;
 	}
 	
-	public String[] toArr (String in) {
+	public String[] toArr (String in, boolean forTree) {
 		String copy = in;
 		int totalSize = 0;
 		while(copy.indexOf("052015")!= -1) {
 			copy = copy.substring(copy.indexOf("052015")+6, copy.length());
-			//System.out.println("Copy:" + copy);
 			totalSize++;
 		}
-		//System.out.println(totalSize);
+		
 		String[] rtn = new String[totalSize];
 		int rtnIndex = 0;
 		copy = in;
 		while(!copy.isEmpty()) {
 			String add = copy.substring(0, copy.indexOf("052015"));
+			if(!forTree)
+			  add = add.substring(add.indexOf(":")+1);
 			rtn[rtnIndex] = add;
 			rtnIndex++;
 			copy = copy.substring(copy.indexOf("052015")+6, copy.length());
-			//System.out.println(copy);
 		}
 		return rtn;
 		

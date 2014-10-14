@@ -16,8 +16,8 @@ public class PredicateConstantListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		JComboBox pressed= (JComboBox) arg0.getSource();
-		if(pressed.equals(gui.predicates)) {
-			String current = (String) gui.predicates.getSelectedItem();
+		if(pressed.equals(gui.functions)) {
+			String current = (String) gui.functions.getSelectedItem();
 			JTextField in = gui.texts;
 			String userIn = in.getText();
 			if (userIn.indexOf("Enter Your Statement Here") != -1)

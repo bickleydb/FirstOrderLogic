@@ -1,50 +1,40 @@
 import java.io.File;
 
+import org.w3c.dom.NodeList;
+
 
 public class LogicTest {
 	XMLReader[] readers;
-	
+	TruthTree[] worlds;
 	
 	public LogicTest () {
 		File findFiles = new File("src/");
 		String[] files = findFiles.list();
 		int numWorlds = 0;
 		for(int i = 0; i < files.length; i++) {
+			//System.out.println(files[i]);
 		  if(files[i].toLowerCase().indexOf("world") != -1) {
 			  numWorlds++;
 		  }
 		}
-		
-		readers = new XMLReader[numWorlds];
-		int numReaders = 0;
+		worlds = new TruthTree[numWorlds];
+		int worldIndex = 0;
 		for(int i = 0; i < files.length; i++) {
-			  if(files[i].toLowerCase().indexOf("world") != -1) {
-				 readers[numReaders] = new XMLReader("src/"+files[i]);
-				 numReaders++;
-			  }
+			if(files[i].indexOf(".xml") != -1 && files[i].indexOf("world") != -1) {
+				worlds[worldIndex] = buildTree(files[i]);
+				System.out.println(worlds[worldIndex]);
 			}
-	}
-	
-	
-	
-	public boolean getTruth(XMLReader world, String input) {
-		boolean rtn = false;
-		String truth = world.getTruth();
-		String [] stuff = world.toArr(truth);
-		for(int i = 0; i < stuff.length; i++) {
-			System.out.println(stuff[i]);
 		}
-		return rtn;
 	}
 
-
-
-	public void grade(String toAdd) {
-		for(int i = 0; i < readers.length; i++) {
-			System.out.println(toAdd);
-			getTruth(readers[i],toAdd);
-		}
+	private TruthTree buildTree(String string) {
+		XMLReader reader = new XMLReader("src/"+string);
+		TruthTree world = new TruthTree(string);
+		String[] func = reader.toArr(reader.getFunctions(),true);
+		for(int i = 0; i < func.length; i++) 
+			world.addFunction(func[i]);
 		
+		reader.getTruth();
+		return world;
 	}
-
 }

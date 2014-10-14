@@ -28,7 +28,7 @@ public class TextButtonListener implements ActionListener {
 			if(toAdd.indexOf("Enter Your Statement Here") != -1)
 				return;
 			
-			gui.grader.grade(toAdd);
+			//gui.grader.grade(toAdd);
 			
 			File feedbackFolder = new File("Feedback");
 			if(!feedbackFolder.exists())

@@ -26,7 +26,7 @@ public class ProgramGui extends JFrame{
 	private InputDocumentListener heyListen;
 	private PredicateConstantListener placePredicate;
 	public LogicTest grader;
-	public JComboBox<String> predicates;
+	public JComboBox<String> functions;
 	public JTextField texts;
 	public JTextArea out;
 	public XMLReader reader;
@@ -36,7 +36,7 @@ public class ProgramGui extends JFrame{
 	public ProgramGui() {
 		text = new TextButtonListener(this);
 		heyListen = new InputDocumentListener(this);
-		reader = new XMLReader("src/domain.xml");
+		reader = new XMLReader("src/world1.xml");
 		grader = new LogicTest();
 		placePredicate = new PredicateConstantListener(this);
 		fileName = JOptionPane.showInputDialog(this,"What would you like your feedback saved to? Leave it empty if you don't care.");
@@ -53,28 +53,27 @@ public class ProgramGui extends JFrame{
 			JPanel pane = new JPanel();
 
 			pane.setLayout(new BoxLayout(pane,BoxLayout.Y_AXIS));
-			
-			JLabel predicateLabel = new JLabel("Predicates");
+			JLabel predicateLabel = new JLabel("Constants");
 			predicateLabel.setAlignmentX(CENTER_ALIGNMENT);
 			pane.add(predicateLabel);
-			NodeList[] everything = reader.getContents();
+			String con = reader.getConstants();
 			//System.out.println(everything);
-			String predicate = reader.decodeForName(everything[0], "predicate");	
-			predicates = new JComboBox<String>(reader.toArr(predicate));
-			predicates.addActionListener(placePredicate);
-			predicates.setEditable(false);
-			predicates.setName("Predicates");
-			pane.add(predicates);
+			
+			constants = new JComboBox<String>(reader.toArr(con,false));
+			constants.addActionListener(placePredicate);
+			constants.setEditable(false);
+			constants.setName("Predicates");
+			pane.add(constants);
 			
 			JLabel constantLabel = new JLabel("Constants");
 			constantLabel.setAlignmentX(CENTER_ALIGNMENT);
 			pane.add(constantLabel);
 			
 			String constantSet = "";
-			String pred = reader.decodeForName(everything[1], "constant");
-			constants = new JComboBox<String>(reader.toArr(pred));
-			constants.addActionListener(placePredicate);
-			pane.add(constants);
+			String funct = reader.getFunctions();
+			functions = new JComboBox<String>(reader.toArr(funct,false));
+			functions.addActionListener(placePredicate);
+			pane.add(functions);
 			this.add(pane,BorderLayout.WEST);
 
 		}
