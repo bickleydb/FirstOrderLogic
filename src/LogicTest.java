@@ -12,7 +12,6 @@ public class LogicTest {
 		String[] files = findFiles.list();
 		int numWorlds = 0;
 		for(int i = 0; i < files.length; i++) {
-			//System.out.println(files[i]);
 		  if(files[i].toLowerCase().indexOf("world") != -1) {
 			  numWorlds++;
 		  }
@@ -40,12 +39,17 @@ public class LogicTest {
 			functionName = truths[t];
 			t++;
 			int numMore = Integer.parseInt(truths[t]);
-			System.err.println(numMore);
+			System.out.println("Function: " + functionName);
+			
+			
 			for(int i = t+1; i <= t+numMore; i++) {
-				System.out.println(world.addVariable(truths[i], functionName,""));
+				System.out.println("Params: " + truths[i]);
+				System.out.println(world.addTruth(world.getFunction(functionName), truths[i].substring(truths[i].indexOf(":")+1)+":",numMore));
+				
 			}
 			t = t+numMore+1;
 		}
+		System.out.println(world);
 		return world;
 	}
 }

@@ -2,15 +2,6 @@
 public class TruthTree {
 	TruthNode root;
 	
-	public static void main(String[] args) {
-		TruthTree test = new TruthTree("World 1");
-		test.addFunction("Test");
-		test.addVariable("testestest", "Test","Banana");
-		test.addFunction("Hopefully this will work");
-		System.out.println(test);
-		
-	}
-	
 	public TruthTree (String worldName) {
 		root = new TruthNode(worldName, "world","banana");
 	}
@@ -27,15 +18,44 @@ public class TruthTree {
 		return true;
 	}
 	
+	public boolean addTruth (TruthNode cur, String params, int depth) {
+		String searching = params;
+		if(depth == 0)
+			return true;
+		if(params.indexOf(":") != -1) {
+			searching = params.substring(0, params.indexOf(":"));
+			params = params.substring(params.indexOf(":")+1);
+		}
+		if(params.indexOf(":") == -1) {
+			params = "";
+			depth = 1;
+		}
+		
+		System.out.println("Searching: " + searching + "  Param: " + params);
+		TruthNode[] toAdd = cur.nodes;
+		for(int i = 0; i < toAdd.length; i++) {
+			if(toAdd[i]!= null) {
+				if(toAdd[i].name.indexOf(searching) != -1) {
+				   return addTruth(toAdd[i],params,depth-1);
+				}
+			}
+			cur.addNode(new TruthNode(searching,"",""));
+			return addTruth(toAdd[i],params,depth-1);
+		}
+		
+		return true;
+	}
 	public boolean addVariable (String variableName, String functionName, String domain) {
 		TruthNode function = null;
-		System.out.println("Adding: " + variableName);
-		System.out.println("Function: " + functionName);
 		for(int i = 0; i < root.nodes.length; i++) {
 			if(!(root.nodes[i] == null)) {
-			if(root.nodes[i].name.equals(functionName))
+				if(functionName.indexOf(":") != -1) {
+				   functionName = functionName.substring(functionName.indexOf(":"));
+				}
+			  if(root.nodes[i].name.equals(functionName)) {
 				System.out.println("Node name: " + root.nodes[i].name);
 				function = root.nodes[i];
+			  }
 			}
 		}
 		if(function == null)
@@ -75,6 +95,14 @@ public class TruthTree {
 		    	rtn = rtn + toString(node.nodes[i],level+1);
 		}
 		return rtn;
+	}
+
+	public TruthNode getFunction(String functionName) {
+		for(int i = 0; i < root.nodes.length; i++){
+			if(root.nodes[i] != null && root.nodes[i].name.indexOf(functionName)!= -1)
+				return root.nodes[i];
+		}
+		return null;
 	}
 
 }

@@ -8,13 +8,17 @@
 	<constant name="John Jacob Jingerheimerschmitt" domain="person"></constant>
 
 	<function name="Drinks With" args = "2" domain = "Drinking">
-		<true params="domain:person, Homer"></true>
-		<true params="Phil,Dude"></true>
+		<true params="Bob:Homer"></true>
+		<true params="James:Homer"></true>
+		<true params="Phil:Homer"></true>
+		<true params="Dude:Homer"></true>
+		<true params="SomeGuy:Homer"></true>
+		<true params="Phil:Dude"></true>
 	</function>
 	
 	<function name="Friends With" args="2" domain = "Friends">
-		<true params="domain:person, SomeGuy"></true>
-		<true params="Homer, Bob"></true>
+		<true params="James:SomeGuy"></true>
+		<true params="Homer1:Bob"></true>
 	</function>
 	
 	

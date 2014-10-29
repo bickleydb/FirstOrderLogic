@@ -71,9 +71,7 @@ public class TextButtonListener implements ActionListener {
 			String feedback = "\n     Nice Try!\r\n";
 			compOutput.setText(compOutput.getText()+"\n"+in.getText()+ feedback);
 			in.setText("Enter Your Statement Here\t");
-			
-			
-			//System.out.println(compOutput.getLineCount());
+
 			return;
 		}
 		

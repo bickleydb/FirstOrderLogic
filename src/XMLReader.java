@@ -84,11 +84,12 @@ public class XMLReader {
 			rtn = rtn + truth.getLength() + "052015";
 			for(int t = 0; t < truth.getLength(); t++) {
 				Element ele2 = (Element)truth.item(t);
-				rtn = rtn + ele2.getAttribute("params") + "052015";
+				rtn = rtn + ele.getAttribute("domain") + ":" + ele2.getAttribute("params") + "052015";
 			}
 			rtn = rtn + "052015";
 			
 		}
+		System.out.println("truth: " + rtn);
 		return rtn;
 	}
 
@@ -116,6 +117,7 @@ public class XMLReader {
 	
 	public String[] toArr (String in, boolean forTree) {
 		String copy = in;
+		System.out.println("Copy: " + copy);
 		int totalSize = 0;
 		while(copy.indexOf("052015")!= -1) {
 			copy = copy.substring(copy.indexOf("052015")+6, copy.length());
