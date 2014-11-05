@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,12 +18,23 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+/**
+ * @author bickledb
+ *
+ */
+/**
+ * @author bickledb
+ *
+ */
 public class XMLReader {
 	File toRead;
 	DocumentBuilderFactory dbFact;
 	DocumentBuilder dBuilder;
 	Document doc;
 
+	/**
+	 * @param fileName
+	 */
 	public XMLReader(String fileName) {
 		toRead = new File(fileName);
 		dbFact = DocumentBuilderFactory.newInstance();
@@ -40,59 +52,74 @@ public class XMLReader {
 		}
 	}
 
+	/**
+	 * @return
+	 */
+
 	public NodeList[] getContents() {
 		NodeList[] contents = new NodeList[2];
 		NodeList predicates = doc.getElementsByTagName("predicate");
-		//System.out.println(predicates.getLength());
+		// System.out.println(predicates.getLength());
 		NodeList constants = doc.getElementsByTagName("constant");
 		contents[0] = predicates;
 		contents[1] = constants;
 		return contents;
 	}
-	
+
+	/**
+	 * @return
+	 */
 	public String getFunctions() {
 		String rtn = "";
 		NodeList functions = doc.getElementsByTagName("function");
-		for(int i = 0; i < functions.getLength(); i++) {
-			Element ele = (Element)functions.item(i);
-			rtn = rtn + ele.getAttribute("domain") + ":" + ele.getAttribute("name") + "052015";
+		for (int i = 0; i < functions.getLength(); i++) {
+			Element ele = (Element) functions.item(i);
+			rtn = rtn + ele.getAttribute("name") + "052015";
 		}
 		return rtn;
-		
+
 	}
-	
+
+	/**
+	 * @return
+	 */
 	public String getConstants() {
 		String rtn = "";
 		NodeList functions = doc.getElementsByTagName("constant");
-		for(int i = 0; i < functions.getLength(); i++) {
-			Element ele = (Element)functions.item(i);
-			rtn = rtn + ele.getAttribute("domain") + ":" + ele.getAttribute("name") + "052015";
+		for (int i = 0; i < functions.getLength(); i++) {
+			Element ele = (Element) functions.item(i);
+			rtn = rtn + ele.getAttribute("domain") + ":"
+					+ ele.getAttribute("name") + "052015";
 		}
 		return rtn;
-		
-		
-		
+
 	}
-	
-	public String getTruth () {
-		String rtn = "";
+
+	/**
+	 * @return
+	 */
+	public ArrayList<String> getTruth(String functionName) {
+		ArrayList<String> rtn = new ArrayList<String>();
+		System.out.println("ENTERING GETTRUTH");
 		NodeList functions = doc.getElementsByTagName("function");
 		for(int i = 0; i < functions.getLength(); i++) {
-			Element ele = (Element)functions.item(i);
-			NodeList truth = ele.getElementsByTagName("true");
-			rtn = rtn + ele.getAttribute("name") + "052015";
-			rtn = rtn + truth.getLength() + "052015";
-			for(int t = 0; t < truth.getLength(); t++) {
-				Element ele2 = (Element)truth.item(t);
-				rtn = rtn + ele.getAttribute("domain") + ":" + ele2.getAttribute("params") + "052015";
+			Element ele = (Element) functions.item(i);
+			if(ele.getAttribute("name").equals(functionName)) {
+				NodeList truth = ele.getElementsByTagName("true");
+				for(int t = 0; t < truth.getLength(); t++) {
+					Element ele2 = (Element) truth.item(t);
+					rtn.add(ele2.getAttribute("params"));
+				}
 			}
-			rtn = rtn + "052015";
-			
 		}
-		System.out.println("truth: " + rtn);
 		return rtn;
 	}
 
+	/**
+	 * @param input
+	 * @param type
+	 * @return
+	 */
 	public String decodeForName(NodeList input, String type) {
 		String rtn = "";
 		for (int i = 0; i < input.getLength(); i++) {
@@ -104,42 +131,44 @@ public class XMLReader {
 					int argNum = Integer.parseInt(cur.getAttribute("args"));
 					rtn = rtn + "(";
 					for (int a = 0; a < argNum - 1; a++) {
-						rtn = rtn + (char)('z' - a) + ",";
+						rtn = rtn + (char) ('z' - a) + ",";
 					}
 					rtn = rtn + "z)";
 				}
 				rtn = rtn + "052015";
 			}
 		}
-		//System.out.println("RTN " + rtn);
+		// System.out.println("RTN " + rtn);
 		return rtn;
 	}
-	
-	public String[] toArr (String in, boolean forTree) {
+
+	/**
+	 * @param in
+	 * @param forTree
+	 * @return
+	 */
+	public String[] toArr(String in, boolean forTree) {
 		String copy = in;
-		System.out.println("Copy: " + copy);
+		//System.out.println("Copy: " + copy);
 		int totalSize = 0;
-		while(copy.indexOf("052015")!= -1) {
-			copy = copy.substring(copy.indexOf("052015")+6, copy.length());
+		while (copy.indexOf("052015") != -1) {
+			copy = copy.substring(copy.indexOf("052015") + 6, copy.length());
 			totalSize++;
 		}
-		
+
 		String[] rtn = new String[totalSize];
 		int rtnIndex = 0;
 		copy = in;
-		while(!copy.isEmpty()) {
+		while (!copy.isEmpty()) {
 			String add = copy.substring(0, copy.indexOf("052015"));
-			if(!forTree)
-			  add = add.substring(add.indexOf(":")+1);
+			if (!forTree)
+				add = add.substring(add.indexOf(":") + 1);
 			rtn[rtnIndex] = add;
 			rtnIndex++;
-			copy = copy.substring(copy.indexOf("052015")+6, copy.length());
+			copy = copy.substring(copy.indexOf("052015") + 6, copy.length());
 		}
 		return rtn;
-		
-	}
 
-	
-	
+	}
 
 }

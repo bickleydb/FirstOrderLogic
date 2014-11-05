@@ -33,6 +33,9 @@ public class ProgramGui extends JFrame{
 	public JComboBox<String> constants;
 	public String fileName;
 	
+	/**
+	 * 
+	 */
 	public ProgramGui() {
 		text = new TextButtonListener(this);
 		heyListen = new InputDocumentListener(this);
@@ -49,6 +52,9 @@ public class ProgramGui extends JFrame{
 		this.setVisible(true);
 		}
 		
+		/**
+		 * 
+		 */
 		private void createRelationPanel() {
 			JPanel pane = new JPanel();
 
@@ -78,6 +84,9 @@ public class ProgramGui extends JFrame{
 
 		}
 		
+		/**
+		 * 
+		 */
 		private void createCharacterPanel() {
 			JPanel chars = new JPanel();
 			chars.setLayout(new GridLayout(0,1));
@@ -139,6 +148,9 @@ public class ProgramGui extends JFrame{
 		
 		
 		
+		/**
+		 * 
+		 */
 		private void createUserInputPanel() {
 			JPanel input = new JPanel();
 			input.setLayout(new BoxLayout(input,BoxLayout.X_AXIS));
@@ -157,6 +169,9 @@ public class ProgramGui extends JFrame{
 			
 		}
 		
+		/**
+		 * 
+		 */
 		private void createOutputPanel() {
 			JPanel output = new JPanel();
 			output.setLayout(new BorderLayout());
@@ -175,10 +190,16 @@ public class ProgramGui extends JFrame{
 		}
 		
 	
+	/**
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		ProgramGui gui = new ProgramGui();
 	}
 
+	/**
+	 * 
+	 */
 	public void removeInput() {
 		//System.out.println("REMOVE");
 		Document delete = texts.getDocument();

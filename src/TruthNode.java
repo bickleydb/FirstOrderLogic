@@ -9,6 +9,11 @@ public class TruthNode {
 	int startArr = 0;
 	int totalNums = 0;
 	
+	/**
+	 * @param name
+	 * @param type
+	 * @param domain
+	 */
 	public TruthNode (String name, String type, String domain) {
 		this.name = name;
 		this.type = type;
@@ -18,6 +23,10 @@ public class TruthNode {
 	
 
 
+	/**
+	 * @param add
+	 * @return
+	 */
 	public boolean addNode (TruthNode add) {
 		if(totalNums == nodes.length)
 			resizeNums();
@@ -28,6 +37,9 @@ public class TruthNode {
 		return true;
 	}
 
+	/**
+	 * 
+	 */
 	private void resizeNums() {
 		TruthNode[] copy = new TruthNode[nodes.length*2];
 		for(int i = 0; i < nodes.length; i++) {

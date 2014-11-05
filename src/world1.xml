@@ -21,5 +21,8 @@
 		<true params="Homer1:Bob"></true>
 	</function>
 	
+	<function name = "CAN THIS WORK" args="1" domain = "Hopeuful">
+		<true params = "YES IT CAN"></true>
+	</function>
 	
 </World>

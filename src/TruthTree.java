@@ -2,10 +2,17 @@
 public class TruthTree {
 	TruthNode root;
 	
+	/**
+	 * @param worldName
+	 */
 	public TruthTree (String worldName) {
 		root = new TruthNode(worldName, "world","banana");
 	}
 	
+	/**
+	 * @param functionName
+	 * @return
+	 */
 	public boolean addFunction (String functionName) {
 		for(int i = 0; i < root.nodes.length; i++) {
 			if(root.nodes[i] == null) {
@@ -18,33 +25,56 @@ public class TruthTree {
 		return true;
 	}
 	
-	public boolean addTruth (TruthNode cur, String params, int depth) {
-		String searching = params;
-		if(depth == 0)
-			return true;
-		if(params.indexOf(":") != -1) {
-			searching = params.substring(0, params.indexOf(":"));
-			params = params.substring(params.indexOf(":")+1);
+	/**
+	 * @param cur
+	 * @param params
+	 * @return
+	 */
+	public boolean addTruth (TruthNode cur, String params) {
+		int numParams = 0;
+		for(int i = 0; i < params.length(); i++) {
+			if(params.charAt(i) == ':')
+				numParams++;
 		}
-		if(params.indexOf(":") == -1) {
-			params = "";
-			depth = 1;
-		}
-		
-		System.out.println("Searching: " + searching + "  Param: " + params);
-		TruthNode[] toAdd = cur.nodes;
-		for(int i = 0; i < toAdd.length; i++) {
-			if(toAdd[i]!= null) {
-				if(toAdd[i].name.indexOf(searching) != -1) {
-				   return addTruth(toAdd[i],params,depth-1);
-				}
+		String[] truths = new String[numParams+1];
+		for(int i = 0; i < truths.length; i++) {
+			if(params.indexOf(":") != -1) {
+			  truths[i] = params.substring(0,params.indexOf(":"));
+			  params = params.substring(params.indexOf(":")+1);
+			} else {
+			  truths[i] = params;
 			}
-			cur.addNode(new TruthNode(searching,"",""));
-			return addTruth(toAdd[i],params,depth-1);
 		}
-		
+		for(int i = 0; i < cur.nodes.length; i++) {
+			if(cur.nodes[i] == null) {
+				cur.nodes[i] = new TruthNode(truths[0], "truth", "b");
+				return addTruthNode(cur.nodes[i],truths,1);
+			}
+		}
 		return true;
 	}
+	
+	
+	public boolean addTruthNode(TruthNode cur, String[] params, int index) {
+		if(index >= params.length)
+			return true;
+		for(int i = 0; i < cur.nodes.length; i++) {
+			if(cur.nodes[i] == null) {
+				cur.nodes[i] = new TruthNode(params[index],"truth","b");
+				return addTruthNode(cur.nodes[i],params,index+1);
+			} else {
+				if(cur.nodes[i].name.equals(params[index]))
+				return addTruthNode(cur.nodes[i],params,index+1);
+			}
+		}
+		return true;
+	}
+	/**
+	 * @param variableName
+	 * @param functionName
+	 * @param domain
+	 * @return
+	 */
 	public boolean addVariable (String variableName, String functionName, String domain) {
 		TruthNode function = null;
 		for(int i = 0; i < root.nodes.length; i++) {
@@ -73,11 +103,19 @@ public class TruthTree {
 		return true;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString () {
 		return toString(root,0);
 	
 	}
 	
+	/**
+	 * @param node
+	 * @param level
+	 * @return
+	 */
 	public String toString(TruthNode node, int level) {
 		String rtn = "";
 		String indent = "";
@@ -97,6 +135,10 @@ public class TruthTree {
 		return rtn;
 	}
 
+	/**
+	 * @param functionName
+	 * @return
+	 */
 	public TruthNode getFunction(String functionName) {
 		for(int i = 0; i < root.nodes.length; i++){
 			if(root.nodes[i] != null && root.nodes[i].name.indexOf(functionName)!= -1)

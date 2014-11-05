@@ -8,6 +8,9 @@ public class InputDocumentListener implements DocumentListener {
 
 	ProgramGui gui;
 	
+	/**
+	 * @param gui
+	 */
 	public InputDocumentListener(ProgramGui gui) {
 	this.gui = gui;	
 	

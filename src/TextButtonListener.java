@@ -14,16 +14,23 @@ import javax.swing.JTextField;
 public class TextButtonListener implements ActionListener {
 	ProgramGui gui;
 	
+	/**
+	 * @param gui
+	 */
 	public TextButtonListener(ProgramGui gui) {
 		super();
 		this.gui = gui;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void actionPerformed(ActionEvent arg0) {
 		JButton pressed = (JButton)arg0.getSource();
 		if (pressed.getName().equals("enter")){
 			JTextArea compOutput = gui.out;
 			JTextField in = gui.texts;
+			System.out.println(gui.grader.toString());
 			String toAdd = in.getText();
 			if(toAdd.indexOf("Enter Your Statement Here") != -1)
 				return;
