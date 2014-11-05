@@ -15,14 +15,19 @@ public class PredicateConstantListener implements ActionListener {
 	}
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		JComboBox pressed= (JComboBox) arg0.getSource();
+		@SuppressWarnings("unchecked")
+		JComboBox<String> pressed= (JComboBox<String>) arg0.getSource();
 		if(pressed.equals(gui.functions)) {
 			String current = (String) gui.functions.getSelectedItem();
 			JTextField in = gui.texts;
 			String userIn = in.getText();
 			if (userIn.indexOf("Enter Your Statement Here") != -1)
 				userIn = "";
-			userIn = userIn + current;
+			int location =  in.getCaretPosition();
+			String first = userIn.substring(0,location);
+			String second = userIn.substring(location);
+		    userIn = first + current + second;
+			//userIn = userIn + current;
 			in.setText(userIn);
 		}
 		if (pressed.equals(gui.constants)) {
@@ -31,7 +36,11 @@ public class PredicateConstantListener implements ActionListener {
 			String userIn = in.getText();
 			if (userIn.indexOf("Enter Your Statement Here") != -1)
 				userIn = "";
-			userIn = userIn + current;
+			int location =  in.getCaretPosition();
+			String first = userIn.substring(0,location);
+			String second = userIn.substring(location);
+		    userIn = first + current + second;
+			//userIn = userIn + current;
 			in.setText(userIn);
 			
 			

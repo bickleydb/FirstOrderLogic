@@ -11,5 +11,10 @@ public class Constants {
 	public static final char Y = 'y';
 	public static final String X_PRIME = "x\'";
 	public static final String Y_PRIME = "y\'";
+	
+	public static final String[] seperators = { Character.toString(AND), Character.toString(OR), Character.toString(IMPLIES), Character.toString(IFF)};
+	public static final String[] variables = { Character.toString(X) , Character.toString(Y), X_PRIME, Y_PRIME} ;
+	public static final String[] scopes = { Character.toString(FOR_ALL), Character.toString(THERE_EXISTS) };
+	
 
 }

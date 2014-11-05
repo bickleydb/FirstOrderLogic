@@ -1,7 +1,5 @@
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 
 
 public class InputDocumentListener implements DocumentListener {
@@ -24,11 +22,8 @@ public class InputDocumentListener implements DocumentListener {
 
 	@Override
 	public void insertUpdate(DocumentEvent arg0) {
-		Document doc = arg0.getDocument();
-		String text = "";
 		try {
-			text = doc.getText(0, doc.getLength());
-				gui.removeInput();
+			gui.removeInput();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			//System.out.println("Caught");

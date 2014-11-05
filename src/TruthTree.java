@@ -49,6 +49,9 @@ public class TruthTree {
 			if(cur.nodes[i] == null) {
 				cur.nodes[i] = new TruthNode(truths[0], "truth", "b");
 				return addTruthNode(cur.nodes[i],truths,1);
+			} else {
+				if(cur.nodes[i].name.equals(truths[0]))
+					return addTruthNode(cur.nodes[i],truths,1);
 			}
 		}
 		return true;

@@ -33,7 +33,7 @@ public class ProgramGui extends JFrame{
 	public JComboBox<String> constants;
 	public String fileName;
 	
-	/**
+	/**+
 	 * 
 	 */
 	public ProgramGui() {
@@ -75,8 +75,7 @@ public class ProgramGui extends JFrame{
 			constantLabel.setAlignmentX(CENTER_ALIGNMENT);
 			pane.add(constantLabel);
 			
-			String constantSet = "";
-			String funct = reader.getFunctions();
+			String funct = reader.getFunctions(true);
 			functions = new JComboBox<String>(reader.toArr(funct,false));
 			functions.addActionListener(placePredicate);
 			pane.add(functions);
@@ -137,9 +136,6 @@ public class ProgramGui extends JFrame{
 			y.setName(Character.toString(Constants.Y));
 			xPrime.setName(Constants.X_PRIME);
 			yPrime.setName(Constants.Y_PRIME);
-			
-			
-			
 			
 		
 			chars.setBorder(BorderFactory.createDashedBorder(Color.RED));

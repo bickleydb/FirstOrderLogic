@@ -29,14 +29,14 @@ public class TextButtonListener implements ActionListener {
 		JButton pressed = (JButton)arg0.getSource();
 		if (pressed.getName().equals("enter")){
 			JTextArea compOutput = gui.out;
+			compOutput.setCaretPosition(0);
 			JTextField in = gui.texts;
-			System.out.println(gui.grader.toString());
+			//System.out.println(gui.grader.toString());
 			String toAdd = in.getText();
 			if(toAdd.indexOf("Enter Your Statement Here") != -1)
 				return;
 			
-			//gui.grader.grade(toAdd);
-			
+			gui.grader.evaluateStatement(toAdd);
 			File feedbackFolder = new File("Feedback");
 			if(!feedbackFolder.exists())
 				feedbackFolder.mkdir();
@@ -72,7 +72,7 @@ public class TextButtonListener implements ActionListener {
 				
 			}
 			
-			printer.close();
+			//printer.close();
 			//input.close();
 			
 			String feedback = "\n     Nice Try!\r\n";
@@ -87,7 +87,10 @@ public class TextButtonListener implements ActionListener {
 		String currentInput = userInput.getText();
 		if (currentInput.indexOf("Enter Your Statement Here") != -1)
 			currentInput = "";
-		currentInput = currentInput + pressed.getName();
+		int location =  userInput.getCaretPosition();
+		String first = currentInput.substring(0,location);
+		String second = currentInput.substring(location);
+		currentInput = first + pressed.getName() + second;
 		userInput.setText(currentInput);
 		
 	}

@@ -1,8 +1,6 @@
 import java.io.File;
 import java.util.ArrayList;
 
-import org.w3c.dom.NodeList;
-
 
 public class LogicTest {
 	XMLReader[] readers;
@@ -25,9 +23,66 @@ public class LogicTest {
 		for(int i = 0; i < files.length; i++) {
 			if(files[i].indexOf(".xml") != -1 && files[i].indexOf("world") != -1) {
 				worlds[worldIndex] = buildTree(files[i]);
-				//System.out.println(worlds[worldIndex]);
+			
 			}
 		}
+	}
+	
+	public boolean evaluateStatement(String input) {
+		System.out.println(this);
+	    getSections(input);
+		return false;
+	}
+	
+	private String[] getSections (String input) {
+	    int parts = getNumParts(input);
+	    String[] getOps = getOperations(input,parts-1);
+	    String[] rtn = getParts(input,getOps);
+	    for(int i = 0; i < rtn.length; i++)
+	    	System.out.println(rtn[i]);
+	   // System.out.println(rtn[0]);
+	    return rtn;
+	    
+	    
+	}
+	
+	private String[] getParts (String input, String[] ops) {
+		String[] rtn = new String[ops.length+1];
+		for(int i = 0; i < rtn.length-1; i++) {
+			rtn[i] = input.substring(0, input.indexOf(ops[i]));
+			input = input.substring(input.indexOf(ops[i])+1);
+			//System.out.println(input);
+		}
+		rtn[rtn.length-1] = input;
+		return rtn;
+	}
+	
+	private String[] getOperations (String input, int parts) {
+		String[] seperators = Constants.seperators;
+		String[] getOps = new String[parts];
+		int opIndex = 0;
+		for(int i = 0; i < input.length(); i++) {
+			for(int t = 0; t < seperators.length; t++) {
+				if(input.substring(i,i+seperators[t].length()).equals(seperators[t])) {
+					getOps[opIndex] = seperators[t];
+					opIndex++;
+				}
+			}
+	    }
+		return getOps;
+	}
+	
+	private int getNumParts (String input) {
+		String[] seperators = Constants.seperators;
+		int sections = 0;
+		for(int i = 0; i < input.length(); i++) {
+			for(int t = 0; t < seperators.length; t++) {
+				if(input.substring(i,i+seperators[t].length()).equals(seperators[t]))
+					sections++;
+			}
+	    }
+	
+		return sections+1;
 	}
 	
 	public String toString() {
@@ -45,7 +100,7 @@ public class LogicTest {
 	private TruthTree buildTree(String string) {
 		XMLReader reader = new XMLReader("src/"+string);
 		TruthTree world = new TruthTree(string);
-		String[] func = reader.toArr(reader.getFunctions(),true);
+		String[] func = reader.toArr(reader.getFunctions(false),true);
 		for(int i = 0; i < func.length; i++) 
 			world.addFunction(func[i]);
 		

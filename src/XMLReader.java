@@ -69,14 +69,27 @@ public class XMLReader {
 	/**
 	 * @return
 	 */
-	public String getFunctions() {
+	public String getFunctions(boolean forGui) {
 		String rtn = "";
 		NodeList functions = doc.getElementsByTagName("function");
 		for (int i = 0; i < functions.getLength(); i++) {
 			Element ele = (Element) functions.item(i);
-			rtn = rtn + ele.getAttribute("name") + "052015";
+			int numParams = Integer.parseInt(ele.getAttribute("args"));
+			rtn = rtn + ele.getAttribute("name");
+			if (forGui) {
+			rtn = rtn + " ( ";
+			for(int t = numParams-1; t > 0; t--) {
+				rtn = rtn + (char)(('z') -t) + " , " ;
+			}
+			if(numParams != 0)
+				rtn = rtn + "z )";
+			else 
+				rtn = rtn + ")";
+			}
+			rtn = rtn	+"052015";
+			
 		}
-		return rtn;
+		return rtn + "052015";
 
 	}
 
@@ -100,7 +113,6 @@ public class XMLReader {
 	 */
 	public ArrayList<String> getTruth(String functionName) {
 		ArrayList<String> rtn = new ArrayList<String>();
-		System.out.println("ENTERING GETTRUTH");
 		NodeList functions = doc.getElementsByTagName("function");
 		for(int i = 0; i < functions.getLength(); i++) {
 			Element ele = (Element) functions.item(i);
