@@ -128,14 +128,14 @@ public class ProgramGui extends JFrame{
 			
 			forAll.setName(Character.toString(Constants.FOR_ALL));
 			thereExists.setName(Character.toString(Constants.THERE_EXISTS));
-			and.setName(Character.toString(Constants.AND));
-			or.setName(Character.toString(Constants.OR));
-			impliles.setName(Character.toString(Constants.IMPLIES));
-			iff.setName(Character.toString(Constants.IFF));
-			x.setName(Character.toString(Constants.X));
-			y.setName(Character.toString(Constants.Y));
-			xPrime.setName(Constants.X_PRIME);
-			yPrime.setName(Constants.Y_PRIME);
+			and.setName(Character.toString(Constants.AND)+" ");
+			or.setName(Character.toString(Constants.OR)+" ");
+			impliles.setName(Character.toString(Constants.IMPLIES)+" ");
+			iff.setName(Character.toString(Constants.IFF)+" ");
+			x.setName(Character.toString(Constants.X)+" ");
+			y.setName(Character.toString(Constants.Y)+" ");
+			xPrime.setName(Constants.X_PRIME + " ");
+			yPrime.setName(Constants.Y_PRIME+" ");
 			
 		
 			chars.setBorder(BorderFactory.createDashedBorder(Color.RED));

@@ -7,6 +7,32 @@
 	<constant name="SomeGuy" domain="person"></constant>
 	<constant name="John Jacob Jingerheimerschmitt" domain="person"></constant>
 
+	<function name = "P" args = "1" domain = "testing">
+		<true params= "Bob"></true>
+	</function>
+	
+	<function name = "G" args = "1" domain = "testing">
+		<true params= "Bob"></true>
+	</function>
+	
+	<function name = "F" args = "2" domain = "testing">
+		<true params= "X:Y"></true>
+		<true params= "Y:X"></true>
+	</function>
+	
+	
+	<function name = "a" args = "1" domain = "testing">
+		<true params= "Bob"></true>
+	</function>
+	
+	<function name = "b" args = "1" domain = "testing">
+		<true params= "Bob"></true>
+	</function>
+	
+	<function name = "c" args = "1" domain = "testing">
+		<true params= "Bob"></true>
+	</function>
+	
 	<function name="Drinks With" args = "2" domain = "Drinking">
 		<true params="Bob:Homer"></true>
 		<true params="James:Homer"></true>

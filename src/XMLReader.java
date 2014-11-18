@@ -77,14 +77,14 @@ public class XMLReader {
 			int numParams = Integer.parseInt(ele.getAttribute("args"));
 			rtn = rtn + ele.getAttribute("name");
 			if (forGui) {
-			rtn = rtn + " ( ";
+			rtn = rtn + " [ ";
 			for(int t = numParams-1; t > 0; t--) {
 				rtn = rtn + (char)(('z') -t) + " , " ;
 			}
 			if(numParams != 0)
-				rtn = rtn + "z )";
+				rtn = rtn + "z ]";
 			else 
-				rtn = rtn + ")";
+				rtn = rtn + "]";
 			}
 			rtn = rtn	+"052015";
 			
