@@ -28,12 +28,52 @@ public class LogicTest {
 
 			}
 		}
+		for (int i = 0; i < worlds.length; i++) {
+			// System.out.println(worlds[i]);
+
+		}
+	}
+
+	public String[] getFunctions(String input) {
+		// System.out.println(input);
+		String important = input.substring(input.indexOf('(') + 1);
+		String[] sep = getSeperators(input);
+		String[] rtn = new String[sep.length + 1];
+		for (int i = 0; i < rtn.length - 1; i++) {
+			rtn[i] = important.substring(0, important.indexOf(sep[i]));
+			important = important.substring(important.indexOf(sep[i]) + 1);
+		}
+		rtn[rtn.length - 1] = important;
+		return rtn;
 	}
 
 	public boolean evaluateStatement(String input) {
 		String goodInput = translateToGoodFormat(input);
-		System.out.println(removeSpaces(goodInput));
+		StatementTree tree = new StatementTree();
+		tree.buildTree(goodInput);
+		System.out.println(tree);
 		return true;
+	}
+	
+
+	public boolean consistent(String statement) {
+		String[] functions = getFunctions(statement);
+		System.out.println(functions.length);
+		for (int i = 0; i < worlds.length; i++) {
+			TruthTree cur = worlds[i];
+			for (int t = 0; t < functions.length; t++) {
+				String functName = functions[t].substring(0,
+						functions[t].indexOf("["));
+				System.out.println(functName);
+				while (functName.charAt(functName.length() - 1) == ' ') {
+					System.out.println(functName);
+					functName = functName.substring(0, functName.length() - 1);
+				}
+				
+			}
+
+		}
+		return false;
 	}
 
 	private String removeSpaces(String input) {
@@ -110,12 +150,12 @@ public class LogicTest {
 		}
 		int removeExtraParens = 0;
 		int index = 1;
-		while(rtn.charAt(index) == '(') {
+		while (rtn.charAt(index) == '(') {
 			removeExtraParens++;
 			index++;
 		}
 		rtn = rtn.substring(removeExtraParens);
-		rtn = rtn.substring(0, rtn.length()-removeExtraParens-1);
+		rtn = rtn.substring(0, rtn.length() - removeExtraParens - 1);
 
 		for (int i = 0; i < modifiers.size(); i++) {
 			rtn = modifiers.get(i) + rtn;

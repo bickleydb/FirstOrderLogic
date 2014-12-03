@@ -21,6 +21,30 @@ public class TruthNode {
 		nodes = new TruthNode[10];
 	}
 	
+	
+	public String toString() {
+	 String rtn = "";
+	 rtn = rtn + name + "\n";
+	 int depth = 1;
+	 for(int i = 0; i < nodes.length; i++) {
+		 rtn  = toString(rtn,depth);
+	 }
+	 return rtn;
+	}
+	
+	public String toString( String rtn, int depth) {
+		for(int i = 0; i < depth; i++) {
+			rtn = rtn + "--";
+		}
+		rtn = rtn + name + "\n";
+		depth++;
+		for(int i = 0; i < nodes.length; i++) {
+			rtn = toString(rtn,depth);
+		}
+		return rtn;
+		
+		
+	}
 
 
 	/**

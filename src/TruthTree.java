@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 
 public class TruthTree {
 	TruthNode root;
@@ -59,6 +61,7 @@ public class TruthTree {
 	
 	
 	public boolean addTruthNode(TruthNode cur, String[] params, int index) {
+		//Arrays.sort(params);
 		if(index >= params.length)
 			return true;
 		for(int i = 0; i < cur.nodes.length; i++) {
