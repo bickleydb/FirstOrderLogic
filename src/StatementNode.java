@@ -3,24 +3,26 @@ public class StatementNode {
 	String name;
 	String kindOfNode;
 	int numberItems = 0;
-	StatementNode[] children;
+	StatementNode left;
+	StatementNode right;
+	StatementNode center;
 	
 	public StatementNode (String name, String kindOfNode) {
 		this.name = name;
 		this.kindOfNode = kindOfNode;
-		children = new StatementNode[10];
 	}
 	
 	public void addNode (StatementNode add) {
-		if(numberItems == children.length) {
-			StatementNode[] newArr = new StatementNode[children.length*2];
-			for(int i = 0; i < children.length; i++) {
-				newArr[i] = children[i];
-			}
-			children = newArr;
+		if(add.kindOfNode.equals("Scope")) {
+			center = add;
+			return;
 		}
-		children[numberItems] = add;
-		numberItems++;
+		if(right == null){
+			right = add;
+		} else {
+			left = add;
+		}
 	}
+	
 
 }

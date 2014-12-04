@@ -34,7 +34,7 @@ public class LogicTest {
 		}
 	}
 
-	public String[] getFunctions(String input) {
+	public static String[] getFunctions(String input) {
 		// System.out.println(input);
 		String important = input.substring(input.indexOf('(') + 1);
 		String[] sep = getSeperators(input);
@@ -101,6 +101,7 @@ public class LogicTest {
 			}
 			for (int t = 0; t < Constants.scopes.length; t++) {
 				if (Character.toString(cur).equals(Constants.scopes[t])) {
+					int sizeToTake = 0;
 					statements.add(input.substring(i, i + 2));
 					linkers.add("(");
 				}
@@ -163,7 +164,7 @@ public class LogicTest {
 		return rtn;
 	}
 
-	private String[] getSeperators(String input) {
+	public static String[] getSeperators(String input) {
 		int numSeperators = 0;
 		for (int i = 0; i < input.length(); i++) {
 			for (int t = 0; t < Constants.seperators.length; t++) {
