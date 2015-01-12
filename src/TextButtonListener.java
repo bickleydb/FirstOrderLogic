@@ -10,7 +10,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class TextButtonListener implements ActionListener {
-	ProgramGui gui;
+	private ProgramGui gui;
+	File feedbackFolder;
 
 	/**
 	 * @param gui
@@ -18,73 +19,67 @@ public class TextButtonListener implements ActionListener {
 	public TextButtonListener(ProgramGui gui) {
 		super();
 		this.gui = gui;
+
+		this.feedbackFolder = new File(gui.fileName);
+		if (!feedbackFolder.exists())
+			feedbackFolder.mkdir();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	public void actionPerformed(ActionEvent arg0) {
-		JButton pressed = (JButton) arg0.getSource();
-		if (pressed.getName().equals("enter")) {
-			JTextArea compOutput = gui.out;
-			compOutput.setCaretPosition(0);
-			JTextField in = gui.texts;
-			// System.out.println(gui.grader.toString());
-			String toAdd = in.getText();
-			compOutput.setText("");
-			compOutput.setCaretPosition(0);
-			if (toAdd.indexOf("Enter Your Statement Here") != -1)
-				return;
+	private void writeToFile(String toAdd) {
+		String[] files = feedbackFolder.list();
+		File toWrite = new File("Feedback/" + gui.fileName);
+		Scanner input = null;
+		PrintWriter printer = null;
+		try {
+			if (!toWrite.exists()) {
+				printer = new PrintWriter(toWrite);
+				printer.println("Your statement: " + toAdd);
+				printer.println("     Grader response: False!");
+			} else {
+				input = new Scanner(toWrite);
+				String completeData = "";
+				input.nextLine();
+				while (input.hasNext()) {
 
-			gui.grader.evaluateStatement(toAdd);
-			File feedbackFolder = new File("Feedback");
-			if (!feedbackFolder.exists())
-				feedbackFolder.mkdir();
-
-			String[] files = feedbackFolder.list();
-			File toWrite = new File("Feedback/" + gui.fileName);
-			Scanner input = null;
-			PrintWriter printer = null;
-			try {
-				if (!toWrite.exists()) {
-					printer = new PrintWriter(toWrite);
-					printer.println("Your statement: " + toAdd);
-					printer.println("     Grader response: False!");
-				} else {
-					input = new Scanner(toWrite);
-					String completeData = "";
-					input.nextLine();
-					while (input.hasNext()) {
-
-						completeData = completeData + input.nextLine() + "\n";
-					}
-					printer = new PrintWriter(toWrite);
-					printer.println("Grader Feedback");
-					printer.println(completeData);
-
-					printer.println("Your statement: " + toAdd);
-					printer.println("     Grader response: False!");
-
+					completeData = completeData + input.nextLine() + "\n";
 				}
+				printer = new PrintWriter(toWrite);
+				printer.println("Grader Feedback");
+				printer.println(completeData);
 
-			} catch (FileNotFoundException e) {
+				printer.println("Your statement: " + toAdd);
+				printer.println("     Grader response: False!");
 
 			}
 
-			// printer.close();
-			// input.close();
+		} catch (FileNotFoundException e) {
 
-			String feedback = "\n     Nice Try!\r\n";
-			compOutput.setText(compOutput.getText() + "\n" + in.getText()
-					+ feedback);
-			in.setText("Enter Your Statement Here\t");
-
-			return;
 		}
 
+	}
+
+	private void pressEnter() {
+		JTextArea compOutput = gui.out;
+		compOutput.setCaretPosition(0);
+		JTextField in = gui.texts;
+		String toAdd = in.getText();
+		compOutput.setText("");
+		compOutput.setCaretPosition(0);
+		if (toAdd.indexOf("Enter Your Statement Here") != -1)
+			return;
+
+		StatementTree userInput = new StatementTree();
+		
+		String feedback = "\n     Nice Try!\r\n";
+		compOutput.setText(compOutput.getText() + "\n" + in.getText()
+				+ feedback);
+		in.setText("Enter Your Statement Here\t");
+
+		return;
+
+	}
+
+	private void insertButtonName(JButton pressed) {
 		JTextField userInput = gui.texts;
 		String currentInput = userInput.getText();
 		if (currentInput.indexOf("Enter Your Statement Here") != -1)
@@ -96,9 +91,25 @@ public class TextButtonListener implements ActionListener {
 			currentInput = first + pressed.getName() + second;
 		} else {
 			currentInput = currentInput + pressed.getName();
-			
+
 		}
 		userInput.setText(currentInput);
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
+	public void actionPerformed(ActionEvent arg0) {
+		JButton pressed = (JButton) arg0.getSource();
+		if (pressed.getName().equals("enter")) {
+			pressEnter();
+			return;
+		}
+		insertButtonName(pressed);
 
 	}
 

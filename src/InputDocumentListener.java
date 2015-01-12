@@ -4,7 +4,7 @@ import javax.swing.event.DocumentListener;
 
 public class InputDocumentListener implements DocumentListener {
 
-	ProgramGui gui;
+	private ProgramGui gui;
 	
 	/**
 	 * @param gui

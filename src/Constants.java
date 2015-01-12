@@ -17,4 +17,9 @@ public class Constants {
 	public static final String[] scopes = { Character.toString(FOR_ALL), Character.toString(THERE_EXISTS) };
 	
 
+	public static final int ROOT_NODE = 0;
+	public static final int QUANTIFIER = 1;
+	public static final int RELATION_NODE = 2;
+	public static final int FUNCTION_NODE = 3;
+	
 }

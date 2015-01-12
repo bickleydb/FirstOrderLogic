@@ -1,0 +1,60 @@
+<World>
+	<constant name="Homer" domain="person"></constant>
+	<constant name="Bob" domain="person"></constant>
+	<constant name="James" domain="person"></constant>
+	<constant name="Phil" domain="person"></constant>
+	<constant name="Dude" domain="person"></constant>
+	<constant name="SomeGuy" domain="person"></constant>
+	<constant name="John Jacob Jingerheimerschmitt" domain="person"></constant>
+
+	<function name = "P" args = "1" domain = "testing">
+		<true params= "Bob"></true>
+	</function>
+	
+	<function name = "G" args = "1" domain = "testing">
+		<true params= "Bob"></true>
+	</function>
+	
+	<function name = "F" args = "2" domain = "testing">
+		<true params= "X:Y"></true>
+		<true params= "Y:X"></true>
+	</function>
+	
+	
+	<function name = "a" args = "1" domain = "testing">
+		<true params= "Bob"></true>
+	</function>
+	
+	<function name = "b" args = "1" domain = "testing">
+		<true params= "Bob"></true>
+	</function>
+	
+	<function name = "c" args = "1" domain = "testing">
+		<true params= "Bob"></true>
+	</function>
+	
+	<function name="Drinks With" args = "2" domain = "Drinking">
+		<true params="Bob:Homer"></true>
+		<true params="James:Homer"></true>
+		<true params="Phil:Homer"></true>
+		<true params="Dude:Homer"></true>
+		<true params="SomeGuy:Homer"></true>
+		<true params="Phil:Dude"></true>
+		<true params="Bob:James"></true>
+	</function>
+	
+	<function name="Friends With" args="2" domain = "Friends">
+		<true params="James:SomeGuy"></true>
+		<true params="Homer1:Bob"></true>
+	</function>
+	
+	<function name="More Testing" args="11" domain = "Test">
+		<true params="1:1:1:1:1:1:1:1:1:1:1"></true>
+		<true params="1:2:1:1:1:1:1:1:1:1:1"></true>
+	</function>
+	
+	<function name = "CAN THIS WORK" args="1" domain = "Hopeuful">
+		<true params = "YES IT CAN"></true>
+	</function>
+	
+</World>
