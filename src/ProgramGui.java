@@ -18,27 +18,34 @@ import javax.swing.JTextField;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
-
-
+/**
+ * The main class of the program, and is responsible for the GUI of the program.
+ * This class handles calling the correct methods from the correct classes while
+ * handling the GUI.
+ * 
+ * @author Daniel Bickley
+ * 
+ */
 public class ProgramGui extends JFrame {
 
-	public JComboBox<String> functions;
-	public JComboBox<String> worldSelection;
-	public JComboBox<String> constants;
+	protected JComboBox<String> functions;
+	protected JComboBox<String> worldSelection;
+	protected JComboBox<String> constants;
 
-	public JTextField texts;
-	public JTextArea out;
-	public FunctionLoader reader;
-	public String fileName;
+	protected JTextField texts;
+	protected JTextArea out;
+	protected FunctionLoader reader;
+	protected String fileName;
 
 	private TextButtonListener text;
 	private InputDocumentListener heyListen;
 	private PredicateConstantListener placePredicate;
-	public ArrayList<World> worlds;
+	protected ArrayList<World> worlds;
 
 	/**
-	 * +
-	 * 
+	 * Basic constructor that initializes everything required for the GUI to
+	 * function. From here, the program is driven by the listeners to create and
+	 * test the user's input.
 	 */
 	public ProgramGui() {
 		worlds = new ArrayList<World>();
@@ -54,6 +61,10 @@ public class ProgramGui extends JFrame {
 		this.setVisible(true);
 	}
 
+	/*
+	 * Loads in every world within the xml folder. If the folder does not exist,
+	 * then the folder is created.
+	 */
 	private void loadWorlds() {
 		File xmlFolder = new File("xml/");
 		if (!xmlFolder.exists())
@@ -65,6 +76,10 @@ public class ProgramGui extends JFrame {
 
 	}
 
+	/*
+	 * Creates a JOptonPane that is used to determine the user's desired output
+	 * file. If the user doesn't care, the program will default to "output.txt"
+	 */
 	private void chooseFeedbackFolder() {
 		fileName = JOptionPane
 				.showInputDialog(this,
@@ -76,11 +91,18 @@ public class ProgramGui extends JFrame {
 
 	}
 
+	/*
+	 * Instantiates variables in a separate method for readability.
+	 */
 	private void instantiateVariables() {
 		heyListen = new InputDocumentListener(this);
 		placePredicate = new PredicateConstantListener(this);
 	}
 
+	/*
+	 * Gets the names of every world that has been read in for the user to
+	 * select
+	 */
 	private String[] getWorldNames() {
 		String[] rtn = new String[worlds.size()];
 		for (int i = 0; i < rtn.length; i++) {
@@ -90,9 +112,10 @@ public class ProgramGui extends JFrame {
 		return rtn;
 	}
 
-	/**
-		 * 
-		 */
+	/*
+	 * Creates the section of the GUI that contains the JComboBoxes to select
+	 * the world, constants, and functions that the user wants to utilize.
+	 */
 	private void createRelationPanel() {
 		JPanel pane = new JPanel();
 
@@ -128,9 +151,10 @@ public class ProgramGui extends JFrame {
 
 	}
 
-	/**
-		 * 
-		 */
+	/*
+	 * Creates the section of the GUI where the user can select mathematical
+	 * symbols and variables to add into the User input.
+	 */
 	private void createCharacterPanel() {
 		JPanel chars = new JPanel();
 		chars.setLayout(new GridLayout(0, 1));
@@ -186,9 +210,10 @@ public class ProgramGui extends JFrame {
 		this.add(chars, BorderLayout.EAST);
 	}
 
-	/**
-		 * 
-		 */
+	/*
+	 * Creates the section of the GUI where the user types in the statement they would
+	 * like to test against the world 
+	 */
 	private void createUserInputPanel() {
 		JPanel input = new JPanel();
 		input.setLayout(new BoxLayout(input, BoxLayout.X_AXIS));
@@ -205,9 +230,11 @@ public class ProgramGui extends JFrame {
 
 	}
 
-	/**
-		 * 
-		 */
+	/*
+	 * Creates the section of the GUI where the output of the program is shown to the user. 
+	 * The output will also be saved in a file, but the GUI also shows the output to the 
+	 * user as soon as possible.
+	 */
 	private void createOutputPanel() {
 		JPanel output = new JPanel();
 		output.setLayout(new BorderLayout());
@@ -226,16 +253,17 @@ public class ProgramGui extends JFrame {
 	}
 
 	/**
+	 * Makes it go.
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		ProgramGui gui = new ProgramGui();
 	}
 
-	/**
-	 * 
+	/*
+	 * Deletes everything in the user input panel.
 	 */
-	public void removeInput() {
+	protected void removeInput() {
 		// System.out.println("REMOVE");
 		Document delete = texts.getDocument();
 		try {

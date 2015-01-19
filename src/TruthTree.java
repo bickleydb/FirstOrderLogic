@@ -1,6 +1,10 @@
 import java.util.Arrays;
 
-
+/**
+ * 
+ * @author Daniel Bickley
+ *
+ */
 public class TruthTree {
 	TruthNode root;
 	
@@ -60,6 +64,13 @@ public class TruthTree {
 	}
 	
 	
+	/**
+	 * 
+	 * @param cur
+	 * @param params
+	 * @param index
+	 * @return
+	 */
 	public boolean addTruthNode(TruthNode cur, String[] params, int index) {
 		//Arrays.sort(params);
 		if(index >= params.length)

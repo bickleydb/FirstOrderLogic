@@ -9,6 +9,11 @@ import javax.swing.JButton;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+/**
+ * 
+ * @author Daniel Bickley
+ *
+ */
 public class TextButtonListener implements ActionListener {
 	private ProgramGui gui;
 	File feedbackFolder;
@@ -25,6 +30,10 @@ public class TextButtonListener implements ActionListener {
 			feedbackFolder.mkdir();
 	}
 
+	/**
+	 * 
+	 * @param toAdd
+	 */
 	private void writeToFile(String toAdd) {
 		String[] files = feedbackFolder.list();
 		File toWrite = new File("Feedback/" + gui.fileName);
@@ -58,6 +67,9 @@ public class TextButtonListener implements ActionListener {
 
 	}
 
+	/**
+	 * 
+	 */
 	private void pressEnter() {
 		JTextArea compOutput = gui.out;
 		compOutput.setCaretPosition(0);
@@ -79,6 +91,10 @@ public class TextButtonListener implements ActionListener {
 
 	}
 
+	/**
+	 * 
+	 * @param pressed
+	 */
 	private void insertButtonName(JButton pressed) {
 		JTextField userInput = gui.texts;
 		String currentInput = userInput.getText();
