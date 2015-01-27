@@ -20,6 +20,8 @@ public class Constants {
 	 */
 	public static final char FOR_ALL = '\u2200';
 
+	
+	public static final int INDENT_SIZE = 20;
 	/**
 	 * Character that represents "There Exists"
 	 */

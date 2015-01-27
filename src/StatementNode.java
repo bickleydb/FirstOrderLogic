@@ -63,5 +63,29 @@ public class StatementNode {
 			left = add;
 		}
 	}
+	
+	protected String buildBar() {
+		String bar = "|";
+		for(int i = 1; i < Constants.INDENT_SIZE; i++){
+			bar = bar + "-";
+		}
+		bar = bar + "|";
+		for(int i = 1; i < Constants.INDENT_SIZE; i++){
+			bar = bar + "-";
+		}
+		bar = bar + "|";
+		return bar;
+	}
+
+	public String toString() {
+		String rtn = String.format("%"+Constants.INDENT_SIZE + "s","");
+		rtn = rtn + this.name + String.format("%"+Constants.INDENT_SIZE + "s\n","");
+		return rtn;
+	}
+	
+	public static void main(String[] args) {
+		StatementNode test = new StatementNode("Test", "test");
+		System.out.println(test);
+	}
 
 }

@@ -37,39 +37,7 @@ public class StatementTree {
 			placeOnTree = placeOnTree.center;
 			currentRung = placeOnTree;
 		}
-
-		boolean firstTime = true;
-		while (linkers.size() != 0 && statements.size() != 0) {
-			String link = linkers.get(0);
-			if (isSeperator(link.charAt(0))) {
-				if (firstTime) {
-					placeOnTree.center = new StatementNode(link, "Seperator");
-					placeOnTree = placeOnTree.center;
-					currentRung = placeOnTree;
-					placeOnTree.left = new StatementNode(statements.get(0),
-							"Function");
-					firstTime = false;
-
-				} else {
-					placeOnTree.right = new StatementNode(link, "Seperator");
-					placeOnTree = placeOnTree.right;
-					currentRung = placeOnTree;
-					placeOnTree.left = new StatementNode(statements.get(0),
-							"Function");
-				}
-
-				linkers.remove(0);
-				statements.remove(0);
-			}
-
-			if (link.equals("(")) {
-				linkers.remove(0);
-				placeOnTree.left = new StatementNode(linkers.get(0),
-						"Seperator");
-
-			}
-
-		}
+		buildTree(statements, linkers, placeOnTree, true);
 	}
 
 	/**
@@ -92,6 +60,10 @@ public class StatementTree {
 			boolean firstTime) {
 		if (statements.size() == 0 && linkers.size() == 0)
 			return true;
+		if(statements.size() == 1 && linkers.size() == 0) {
+		 placeOnTree.right=new StatementNode(statements.get(0), "Function");
+		 return true;
+		}
 		String link = linkers.get(0);
 		if (isSeperator(link.charAt(0))) {
 			if (firstTime) {
@@ -111,10 +83,41 @@ public class StatementTree {
 			}
 		}
 		if (link.equals("(")) {
-			int curIndex = 0;
-			while (linkers.get(curIndex) != ")") {
-				curIndex++;
+			int linkIndex = linkers.size() - 2;
+			int statementIndex = statements.size() - 2;
+			statements.remove(0);
+			linkers.remove(0);
+			while (linkers.get(linkIndex) != ")") {
+				linkIndex--;
 			}
+			while (statements.get(statementIndex) != "") {
+				statementIndex--;
+			}
+			ArrayList<String> recurseStatement = new ArrayList<String>();
+			ArrayList<String> recurseLinkers = new ArrayList<String>();
+			for (int i = 0; i < statementIndex; i++) {
+				recurseStatement.add(statements.get(0));
+				statements.remove(0);
+			}
+			for (int i = 0; i < linkIndex; i++) {
+				recurseLinkers.add(linkers.get(0));
+				linkers.remove(0);
+			}
+			statements.remove(0);
+			linkers.remove(0);
+			StatementNode keep = placeOnTree;
+		    buildTree(statements, linkers, placeOnTree, false);
+			return buildTree(recurseStatement, recurseLinkers, keep, true);
+			
+		}
+
+		if (link.equals(Constants.NOT)) {
+			placeOnTree.center = new StatementNode(
+					Character.toString(Constants.NOT), "Linker");
+			statements.remove(0);
+			linkers.remove(0);
+			return buildTree(statements, linkers, placeOnTree.center, false);
+
 		}
 
 		return true;
@@ -127,7 +130,6 @@ public class StatementTree {
 	 * @param statements
 	 *            List of Statements to be added
 	 * @param linkers
-	 *            List of linking statements to be added
 	 * @param placeOnTree
 	 *            Location of the node the scopes are to be added to
 	 */
@@ -154,18 +156,6 @@ public class StatementTree {
 			statementIndex++;
 		}
 
-	}
-
-	/**
-	 * Creates a simple string representation of the tree
-	 */
-	public String toString() {
-		String rtn = root.name;
-		int depth = 1;
-		if (root.center != null) {
-			rtn = rtn + "\n" + toString(root.center, depth);
-		}
-		return rtn;
 	}
 
 	/**
@@ -235,11 +225,11 @@ public class StatementTree {
 		for (int i = 0; i < input.length(); i++) {
 			char cur = input.charAt(i);
 			if (cur == '(') {
-				// statements.add("");
+				statements.add("");
 				linkers.add("(");
 			} else {
 				if (cur == ')') {
-					// statements.add("");
+					statements.add("");
 					linkers.add(")");
 				} else {
 					if (isScope(cur)) {
@@ -267,7 +257,6 @@ public class StatementTree {
 				}
 			}
 		}
-		System.out.println("Asdf");
 	}
 
 	/**
@@ -402,22 +391,47 @@ public class StatementTree {
 	 *            How far deep the recursion has gone
 	 * @return String representation of the subtree
 	 */
-	public String toString(StatementNode node, int depth) {
+	public String toString(StatementNode node, int depthFromRoot, int lrc) {
 		String rtn = "";
-		for (int i = 0; i < depth; i++) {
-			rtn = rtn + "--";
+		return "";
+	}
+	
+
+	/**
+	 * Creates a simple string representation of the tree
+	 */
+	public String toString() {
+		int width = this.getWidth(root, 0);
+		String rtn = root.toString();
+		rtn = rtn + root.buildBar();
+	    return rtn;
+	}
+
+
+	public int getWidth(StatementNode start, int depth) {
+		depth = depth + 1;
+		if (start.center != null) {
+			return getWidth(start.center, depth);
 		}
-		rtn = rtn + node.name + "\n";
-		if (node.center != null) {
-			rtn = rtn + toString(node.center, depth + 1);
+		if (start.right != null) {
+			return getWidth(start.right, depth);
 		}
-		if (node.left != null) {
-			rtn = rtn + toString(node.left, depth + 1);
+		return depth + 1;
+	}
+
+	private String getIndentation(int depth, char location) {
+		String rtn = "";
+		for (int i = 0; i < depth * Constants.INDENT_SIZE; i++) {
+			rtn = rtn + "-";
 		}
-		if (node.right != null) {
-			rtn = rtn + toString(node.right, depth + 1);
+		if (location == 'l')
+			rtn = rtn.substring(Constants.INDENT_SIZE / 2);
+		if (location == 'r') {
+			for (int i = 0; i < Constants.INDENT_SIZE / 2; i++)
+				rtn = rtn + "-";
 		}
 		return rtn;
+
 	}
 
 	/**
