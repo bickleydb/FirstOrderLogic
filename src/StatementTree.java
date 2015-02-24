@@ -10,12 +10,14 @@ import java.util.ArrayList;
  */
 public class StatementTree {
 	StatementNode root;
+	Universe uni;
 
 	/**
 	 * Creates the root of a tree, from which everything will be built on.
 	 */
-	public StatementTree() {
+	public StatementTree(Universe uni) {
 		root = new StatementNode("root", "root");
+		this.uni = uni;
 	}
 
 	/**
@@ -26,10 +28,12 @@ public class StatementTree {
 	 * @param input
 	 *            The statement that will be evaluated
 	 */
-	public void buildTree(World world, String input) {
+	public void buildTree(Universe uni, String input) {
 		ArrayList<String> statements = new ArrayList<String>();
 		ArrayList<String> linkers = new ArrayList<String>();
-		getStatementsAndLinkers(input, statements, linkers, world);
+		translateToGoodFormat(uni,input);
+		System.out.println(input);
+		getStatementsAndLinkers(input, statements, linkers, uni);
 		StatementNode placeOnTree = root;
 		StatementNode currentRung = root;
 		addScopes(statements, linkers, placeOnTree);
@@ -37,7 +41,47 @@ public class StatementTree {
 			placeOnTree = placeOnTree.center;
 			currentRung = placeOnTree;
 		}
-		buildTree(statements, linkers, placeOnTree, true);
+		input = input.substring(input.indexOf(" ") +1);
+		placeOnTree.center = new StatementNode();
+		placeOnTree = placeOnTree.center;
+		buildTree(input, placeOnTree);
+	}
+	
+	private void buildTree(String input, StatementNode placeOnTree) {
+		input = input.substring(1,input.length()-1);
+		int startString = 1;
+		int numOpenParens = 1;
+		while( (startString < input.length() && !isSeperator(input.charAt(startString))) || (startString<input.length() && numOpenParens != 0 )) {
+			if(input.charAt(startString) == '(')
+				numOpenParens++;
+			if(input.charAt(startString) == ')')
+				numOpenParens--;
+			startString++;
+		}
+		if(startString >= input.length()-1) {
+			System.out.println(input);
+			placeOnTree.function = uni.getFunction(input.substring(0,input.indexOf("[")+1));
+			placeOnTree.name = placeOnTree.function.getFunctionName();
+			return;
+		}
+		placeOnTree.name = Character.toString(input.charAt(startString));
+		System.out.println(input.charAt(startString));
+		String left = input.substring(0,startString);
+		if(left.length()!= 0){
+			placeOnTree.left = new StatementNode();
+			buildTree(left,placeOnTree.left);
+		}
+		String right = input.substring(startString+1,input.length());
+		System.out.println( "RIGHT" + right);
+		if(right.length() != 0) {
+			placeOnTree.right = new StatementNode();
+			buildTree(right,placeOnTree.right);
+			return;
+		}
+		System.out.println("LEFT: " + left);
+		
+		
+		
 	}
 
 	/**
@@ -46,47 +90,85 @@ public class StatementTree {
 	 * the scopes are first added by a helper method.
 	 * 
 	 * @param statements
-	 *            List of Statements to be added
+	 *            List of Statements to be added-
 	 * @param linkers
 	 *            List of linking statements to be added
 	 * @param placeOnTree
 	 *            The current parent StatementNode
 	 * @param firstTime
-	 *            If this is the first time the method is called
+	 *           If this is the first time the method is called
 	 * @return Returns true of adding the node was successful.
 	 */
 	private boolean buildTree(ArrayList<String> statements,
-			ArrayList<String> linkers, StatementNode placeOnTree,
-			boolean firstTime) {
-		if (statements.size() == 0 && linkers.size() == 0)
+			ArrayList<String> linkers, StatementNode placeOnTree, int code) {
+		if(linkers.size() <= 0 && statements.size() <= 0) {
 			return true;
-		if(statements.size() == 1 && linkers.size() == 0) {
-		 placeOnTree.right=new StatementNode(statements.get(0), "Function");
-		 return true;
+		}
+		
+		switch(linkers.get(0)){
+		case("("):
+			break;
+		case(""+Constants.AND):
+			addLink(statements,linkers,placeOnTree,code,Constants.AND);
+			break;
+		case("" +Constants.OR):
+			addLink(statements,linkers,placeOnTree,code,Constants.OR);
+			break;
+		case("" + Constants.IFF):
+			addLink(statements,linkers,placeOnTree,code,Constants.IFF);
+			break;
+		case("" + Constants.IMPLIES):
+			addLink(statements,linkers,placeOnTree,code,Constants.IMPLIES);
+			break;
+		case("" + Constants.NOT):
+			addNot(statements,linkers,placeOnTree,code);
+			break;
+		}
+		
+		return true;
+		/*if (statements.size() == 0 && linkers.size() == 0)
+			return true;
+		if (statements.size() == 1 && linkers.size() == 0) {
+			//System.out.println(statements.get(0));
+			placeOnTree.right = new StatementNode(this.uni.getFunction(statements.get(0)));
+			return true;
+		}
+		if (statements.size() ==1 && linkers.size() == 1) {
+			placeOnTree = new StatementNode(linkers.get(0),"Seperator");
+			//placeOnTree.right = new StatementNode(linkers.get(0), "Seperator");
+			placeOnTree.right = new StatementNode(this.uni.getFunction(statements.get(0)));
+			return true;
 		}
 		String link = linkers.get(0);
 		if (isSeperator(link.charAt(0))) {
-			if (firstTime) {
+			if (code == Constants.BEGINNING_TREE) {
 				placeOnTree.center = new StatementNode(link, "Seperator");
-				placeOnTree.center.left = new StatementNode(statements.get(0),
-						"Function");
+				placeOnTree.center.left = new StatementNode(this.uni.getFunction(statements.get(0)));
 				linkers.remove(0);
 				statements.remove(0);
-				return buildTree(statements, linkers, placeOnTree.center, false);
-			} else {
+				return buildTree(statements, linkers, placeOnTree.center,
+						Constants.BUILDING_TREE);
+			} else if (code == Constants.BUILDING_TREE){
 				placeOnTree.right = new StatementNode(link, "Seperator");
-				placeOnTree.right.left = new StatementNode(statements.get(0),
-						"Function");
+				placeOnTree.right.left = new StatementNode(this.uni.getFunction(statements.get(0)));
 				linkers.remove(0);
 				statements.remove(0);
-				return buildTree(statements, linkers, placeOnTree.right, false);
+				return buildTree(statements, linkers, placeOnTree.right,
+						Constants.BUILDING_TREE);
+			} else {
+				placeOnTree.left = new StatementNode(link, "Seperator");
+				placeOnTree.left.left = new StatementNode(this.uni.getFunction(statements.get(0)));
+				linkers.remove(0);
+				statements.remove(0);
+				return buildTree(statements, linkers, placeOnTree.left, Constants.BUILDING_TREE);
 			}
 		}
 		if (link.equals("(")) {
-			int linkIndex = linkers.size() - 2;
-			int statementIndex = statements.size() - 2;
 			statements.remove(0);
 			linkers.remove(0);
+			int linkIndex = linkers.size() - 1;
+			int statementIndex = statements.size() - 1;
+			
 			while (linkers.get(linkIndex) != ")") {
 				linkIndex--;
 			}
@@ -106,9 +188,11 @@ public class StatementTree {
 			statements.remove(0);
 			linkers.remove(0);
 			StatementNode keep = placeOnTree;
-		    buildTree(statements, linkers, placeOnTree, false);
-			return buildTree(recurseStatement, recurseLinkers, keep, true);
-			
+			buildTree(statements, linkers, placeOnTree, Constants.BUILDING_TREE);
+			keep = keep.right;
+			return buildTree(recurseStatement, recurseLinkers, keep,
+					Constants.SUB_STATEMENT);
+
 		}
 
 		if (link.equals(Constants.NOT)) {
@@ -116,11 +200,34 @@ public class StatementTree {
 					Character.toString(Constants.NOT), "Linker");
 			statements.remove(0);
 			linkers.remove(0);
-			return buildTree(statements, linkers, placeOnTree.center, false);
+			return buildTree(statements, linkers, placeOnTree.center,
+					Constants.BEGINNING_TREE);
 
 		}
 
-		return true;
+		return true;*/
+	}
+
+	private void addNot(ArrayList<String> statements,
+			ArrayList<String> linkers, StatementNode placeOnTree, int code) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void addLink(ArrayList<String> statements,
+			ArrayList<String> linkers, StatementNode placeOnTree, int code,
+			char linkType) {
+			
+	}
+	
+	private void addNode(StatementNode addTo, StatementNode toAdd) {
+		if(addTo.left == null) {
+		  addTo.left = toAdd;
+		  return;
+		} else {
+			addTo.right = toAdd;
+		}
+		
 	}
 
 	/**
@@ -189,8 +296,8 @@ public class StatementTree {
 	 * @return Null if the section does not match a function, or the function
 	 *         name if it does match with something in the world.
 	 */
-	private String isFunctionInWorld(String input, int index, World world) {
-		String[] functionNames = world.getFunctionWithoutParams();
+	private String isFunctionInWorld(String input, int index, Universe uni) {
+		String[] functionNames = uni.getFunctionWithoutParams();
 		for (int t = 0; t < functionNames.length; t++) {
 			int size = functionNames[t].length();
 			if (index + size < input.length()) {
@@ -221,7 +328,7 @@ public class StatementTree {
 	 *            The world the input statement is being compared with
 	 */
 	private void getStatementsAndLinkers(String input,
-			ArrayList<String> statements, ArrayList<String> linkers, World world) {
+			ArrayList<String> statements, ArrayList<String> linkers, Universe uni) {
 		for (int i = 0; i < input.length(); i++) {
 			char cur = input.charAt(i);
 			if (cur == '(') {
@@ -237,12 +344,13 @@ public class StatementTree {
 						linkers.add("(");
 					} else {
 
-						if (isFunctionInWorld(input, i, world) != null) {
+						if (isFunctionInWorld(input, i, uni) != null) {
 							int closeBracketIndex = i;
 							while (input.charAt(closeBracketIndex) != ']')
 								closeBracketIndex++;
 							statements.add(input.substring(i,
 									closeBracketIndex + 1));
+							linkers.add("F");
 							i = closeBracketIndex;
 						} else {
 
@@ -250,6 +358,7 @@ public class StatementTree {
 								if (Character.toString(cur).equals(
 										Constants.seperators[t])) {
 									linkers.add(Character.toString(cur));
+									statements.add("S");
 								}
 							}
 						}
@@ -262,17 +371,16 @@ public class StatementTree {
 	/**
 	 * Takes in a statement and converts it to a different format so that the
 	 * program can read and analyze it in a more efficient and readable manner.
-	 * 
-	 * @param world
+	 *  @param world
 	 *            World that the input is being compared with
 	 * @param input
 	 *            String that is going to be translated to the correct format
 	 * @return
 	 */
-	private String translateToGoodFormat(World world, String input) {
+	private String translateToGoodFormat(Universe uni, String input) {
 		ArrayList<String> statements = new ArrayList<String>();
 		ArrayList<String> linkers = new ArrayList<String>();
-		getStatementsAndLinkers(input, statements, linkers, world);
+		getStatementsAndLinkers(input, statements, linkers, uni);
 
 		ArrayList<String> modifiers = new ArrayList<String>();
 		String rtn = statements.remove(statements.size() - 1);
@@ -316,7 +424,7 @@ public class StatementTree {
 	 *            Character to be compared
 	 * @return if the parameter is a separator or not.
 	 */
-	private static boolean isSeperator(char input) {
+	public static boolean isSeperator(char input) {
 		for (int t = 0; t < Constants.seperators.length; t++) {
 			if (Character.toString(input).equals(Constants.seperators[t])) {
 				return true;
@@ -395,7 +503,6 @@ public class StatementTree {
 		String rtn = "";
 		return "";
 	}
-	
 
 	/**
 	 * Creates a simple string representation of the tree
@@ -404,9 +511,8 @@ public class StatementTree {
 		int width = this.getWidth(root, 0);
 		String rtn = root.toString();
 		rtn = rtn + root.buildBar();
-	    return rtn;
+		return rtn;
 	}
-
 
 	public int getWidth(StatementNode start, int depth) {
 		depth = depth + 1;
@@ -433,14 +539,20 @@ public class StatementTree {
 		return rtn;
 
 	}
+	
+	public boolean evaluate() {
+		World curWorld = new World();
+		return this.root.evaluate(curWorld);
+	}
 
 	/**
 	 * For debugging
 	 */
 	public static void main(String[] args) {
-		World world = new World();
-		StatementTree tree = new StatementTree();
-		tree.buildTree(world, "∀x P[x] ⇔ (P[x] ⇔ F[x]) ⇔ a [x]");
-		System.out.println(tree);
+		Universe uni = new Universe();
+		StatementTree tree = new StatementTree(uni);
+		tree.buildTree(uni, "∀x  ((K[x])" + Constants.IMPLIES + "(P[x]))" + Constants.AND + "((Q[x])" + Constants.OR + "((T[x])" + Constants.IMPLIES + "(C[x])))");
+		System.out.println("EVALED: " + tree.evaluate());
 	}
 }
+

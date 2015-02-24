@@ -40,7 +40,7 @@ public class ProgramGui extends JFrame {
 	private TextButtonListener text;
 	private InputDocumentListener heyListen;
 	private PredicateConstantListener placePredicate;
-	protected ArrayList<World> worlds;
+	public static Universe uni;
 
 	/**
 	 * Basic constructor that initializes everything required for the GUI to
@@ -48,8 +48,7 @@ public class ProgramGui extends JFrame {
 	 * test the user's input.
 	 */
 	public ProgramGui() {
-		worlds = new ArrayList<World>();
-		loadWorlds();
+		uni = new Universe();
 		instantiateVariables();
 		chooseFeedbackFolder();
 		this.setSize(500, 500);
@@ -57,23 +56,8 @@ public class ProgramGui extends JFrame {
 		createRelationPanel();
 		createCharacterPanel();
 		createUserInputPanel();
-		createOutputPanel();
+		createPromptAndOutputPanel();
 		this.setVisible(true);
-	}
-
-	/*
-	 * Loads in every world within the xml folder. If the folder does not exist,
-	 * then the folder is created.
-	 */
-	private void loadWorlds() {
-		File xmlFolder = new File("xml/");
-		if (!xmlFolder.exists())
-			xmlFolder.mkdir();
-		String[] files = xmlFolder.list();
-		for (int i = 0; i < files.length; i++) {
-			worlds.add(new World("xml/" + files[i]));
-		}
-
 	}
 
 	/*
@@ -100,19 +84,6 @@ public class ProgramGui extends JFrame {
 	}
 
 	/*
-	 * Gets the names of every world that has been read in for the user to
-	 * select
-	 */
-	private String[] getWorldNames() {
-		String[] rtn = new String[worlds.size()];
-		for (int i = 0; i < rtn.length; i++) {
-			String fileName = worlds.get(i).getFilename();
-			rtn[i] = fileName.substring(fileName.indexOf("/") + 1);
-		}
-		return rtn;
-	}
-
-	/*
 	 * Creates the section of the GUI that contains the JComboBoxes to select
 	 * the world, constants, and functions that the user wants to utilize.
 	 */
@@ -129,19 +100,11 @@ public class ProgramGui extends JFrame {
 
 		pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
 
-		worldSelection = new JComboBox<String>(getWorldNames());
-		worldSelection.addActionListener(placePredicate);
-		int currentWorld = worldSelection.getSelectedIndex();
-
-		functions = new JComboBox<String>(worlds.get(currentWorld)
-				.getFunctionNames());
+		functions = new JComboBox<String>(uni.getFunctionNames());
 		functions.addActionListener(placePredicate);
-		constants = new JComboBox<String>(worlds.get(currentWorld)
-				.getConstantNames());
+		constants = new JComboBox<String>(uni.getConstantNames());
 		constants.addActionListener(placePredicate);
 
-		pane.add(worldLabel);
-		pane.add(worldSelection);
 		pane.add(functionLabel);
 		pane.add(functions);
 		pane.add(constantLabel);
@@ -235,21 +198,38 @@ public class ProgramGui extends JFrame {
 	 * The output will also be saved in a file, but the GUI also shows the output to the 
 	 * user as soon as possible.
 	 */
-	private void createOutputPanel() {
+	private void createPromptAndOutputPanel() {
+		
+		JPanel promptAndOutput = new JPanel();
+		promptAndOutput.setLayout(new BorderLayout());
+		
+		
+		
+		JTextField input = new JTextField();
+		JPanel prompt = new JPanel();
+		JLabel promptName = new JLabel("Prompt");
+		prompt.setLayout(new BorderLayout());
+		prompt.add(promptName, BorderLayout.NORTH);
+		prompt.add(input,BorderLayout.CENTER);
+		promptAndOutput.add(prompt,BorderLayout.NORTH);
+		
+		
 		JPanel output = new JPanel();
 		output.setLayout(new BorderLayout());
 		JLabel outputName = new JLabel("Output");
 		output.add(outputName, BorderLayout.NORTH);
-		output.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		out = new JTextArea(100, 100);
+		output.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
 		JScrollPane toScroll = new JScrollPane(out);
 		toScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		output.add(toScroll, BorderLayout.EAST);
-		toScroll.setSize(20, 200);
+	    toScroll.setSize(20, 200);
 		toScroll.setSize(100, 100);
 		out.setEditable(false);
-		output.add(out);
-		this.add(output, BorderLayout.CENTER);
+		output.add(out, BorderLayout.CENTER);
+	    promptAndOutput.add(output,BorderLayout.CENTER);
+		this.add(promptAndOutput, BorderLayout.CENTER);
 	}
 
 	/**

@@ -80,7 +80,7 @@ public class TextButtonListener implements ActionListener {
 		if (toAdd.indexOf("Enter Your Statement Here") != -1)
 			return;
 
-		StatementTree userInput = new StatementTree();
+		StatementTree userInput = new StatementTree(gui.uni);
 		
 		String feedback = "\n     Nice Try!\r\n";
 		compOutput.setText(compOutput.getText() + "\n" + in.getText()

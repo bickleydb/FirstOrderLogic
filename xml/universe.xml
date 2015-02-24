@@ -57,4 +57,23 @@
 		<true params = "YES IT CAN"></true>
 	</function>
 	
+	<function name = "K" args="1" domain = "damn">
+		<true params = "x"></true>
+	</function>
+
+	<function name = "P" args="1" domain = "damn">
+		<true params = "x"></true>
+	</function>
+
+	<function name = "Q" args="1" domain = "damn">
+		<true params = "x"></true>
+	</function>
+
+	<function name = "T" args="1" domain = "damn">
+		<true params = "x"></true>
+	</function>
+
+	<function name = "C" args="1" domain = "damn">
+		<true params = "x"></true>
+	</function>
 </World>

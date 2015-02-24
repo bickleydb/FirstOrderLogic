@@ -16,7 +16,8 @@ import java.util.Arrays;
 public class Function {
 
 	public String functionName;
-	private String[][] goodConfigurations;
+	public int numParams;
+	private String[] configurations;
 	private String domain;
 
 	/**
@@ -28,7 +29,8 @@ public class Function {
 	public Function() {
 		this.functionName = "EMPTY";
 		this.domain = "EMPTY";
-		this.goodConfigurations = new String[0][0];
+		this.configurations = new String[0];
+		numParams = 0;
 	}
 
 	/**
@@ -42,6 +44,7 @@ public class Function {
 	public Function(String functionName) {
 		this();
 		this.functionName = functionName;
+		numParams = 0;
 
 	}
 
@@ -60,6 +63,7 @@ public class Function {
 		this();
 		this.functionName = functionName;
 		this.domain = domain;
+		numParams = 0;
 
 	}
 
@@ -76,12 +80,14 @@ public class Function {
 	 *            will return true for.
 	 */
 	public Function(String functionName, String domain,
-			String[][] goodConfigurations) {
+			String[] configurations) {
 		this();
 		this.functionName = functionName;
 		this.domain = domain;
-		this.goodConfigurations = goodConfigurations;
+		this.configurations = configurations;
+		this.numParams = configurations.length;
 	}
+	
 
 	/**
 	 * Returns a String representation of the function, showing the name,
@@ -92,7 +98,7 @@ public class Function {
 		String rtn = "";
 		rtn = rtn + this.functionName + getParamString() + "\n";
 		rtn = rtn + "Function will return true for: ";
-		rtn = rtn + "\n" + getGoodConfigs();
+		rtn = rtn + "\n" + getConfig();
 		return rtn;
 
 	}
@@ -114,11 +120,11 @@ public class Function {
 	 * @return String list of parameters that the function will return true for.
 	 * 
 	 */
-	public String getGoodConfigs() {
+	public String getConfig() {
 		String rtn = "";
-		for (int i = 0; i < goodConfigurations.length; i++) {
+		for (int i = 0; i < configurations.length; i++) {
 			//Arrays.sort(goodConfigurations[i]);
-			rtn = rtn + Arrays.toString(goodConfigurations[i]) + "\n";
+			rtn = rtn + (configurations[i]) + "\n";
 		}
 		return rtn;
 	}
@@ -133,12 +139,12 @@ public class Function {
 	 */
 	private String getParamString() {
 		String params = "(";
-		if (this.goodConfigurations[0].length == 0) {
+		if (this.configurations.length == 0) {
 			return params + ")";
 		}
-		for (int i = 0; i < this.goodConfigurations[0].length - 1; i++) {
+		for (int i = 0; i < this.configurations.length - 1; i++) {
 			params = params
-					+ (char) ('z' - this.goodConfigurations[0].length + 1 + i)
+					+ (char) ('z' - this.configurations.length + 1 + i)
 					+ ",";
 		}
 		params = params + "z)";
@@ -150,8 +156,7 @@ public class Function {
 	}
 
 	public static void main(String[] args) {
-		String[][] params = { {"Larry", "Bob", "Charlie" },
-				{ "Huey", "Dewey", "Louie" }, { "Abercrombie", "Fitch" } };
+		String[] params = {"Larry", "Bob", "Charlie" };
 		Function test = new Function("TEST", "test", params);
 		System.out.println(test.toString());
 
@@ -161,8 +166,8 @@ public class Function {
 		return functionName;
 	}
 
-	public String[][] getGoodConfigurations() {
-		return goodConfigurations;
+	public String[] getGoodConfigurations() {
+		return configurations;
 	}
 
 	public String getDomain() {
@@ -173,8 +178,12 @@ public class Function {
 		this.functionName = functionName;
 	}
 
-	public void setGoodConfigurations(String[][] goodConfigurations) {
-		this.goodConfigurations = goodConfigurations;
+	public void setGoodConfigurations(String[] goodConfigurations) {
+		this.configurations = goodConfigurations;
+	}
+	
+	public int getNumParams() {
+		return this.numParams;
 	}
 
 	public void setDomain(String domain) {

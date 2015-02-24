@@ -94,24 +94,9 @@ public class Constants {
 	public static final String[] scopes = { Character.toString(FOR_ALL),
 			Character.toString(THERE_EXISTS) };
 
-	/**
-	 * Constant that denotes the root node of a statement tree
-	 */
-	public static final int ROOT_NODE = 0;
+	public static final int  BEGINNING_TREE = 0;
+	public static final int BUILDING_TREE = 1;
+	public static final int  SUB_STATEMENT = 2;
 
-	/**
-	 * Constant that denotes that a node denotes the scope of a variable.
-	 */
-	public static final int SCOPE_NODE = 1;
-
-	/**
-	 * Constant that denotes that a node is a relation/separator node
-	 */
-	public static final int RELATION_NODE = 2;
-
-	/**
-	 * Constant that denotes that a node represents a function.
-	 */
-	public static final int FUNCTION_NODE = 3;
-
+	
 }

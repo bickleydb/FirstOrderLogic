@@ -38,7 +38,6 @@ public class PredicateConstantListener implements ActionListener {
 	private void changeWorld() {
 		JComboBox<String> worlds = gui.worldSelection;
 		int newSelection = worlds.getSelectedIndex();
-		World changeWorld = gui.worlds.get(newSelection);
 
 		JComboBox<String> functions = gui.functions;
 		JComboBox<String> constants = gui.constants;
@@ -49,11 +48,11 @@ public class PredicateConstantListener implements ActionListener {
 		functions.removeAllItems();
 		constants.removeAllItems();
 
-		String[] newFunctions = changeWorld.getFunctionNames();
+		String[] newFunctions = gui.uni.getFunctionNames();
 		for (int i = 0; i < newFunctions.length; i++)
 			functions.addItem(newFunctions[i]);
 
-		String[] newConstants = changeWorld.getConstantNames();
+		String[] newConstants = gui.uni.getConstantNames();
 		for (int i = 0; i < newConstants.length; i++)
 			constants.addItem(newConstants[i]);
 
