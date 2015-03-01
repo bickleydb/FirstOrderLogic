@@ -91,50 +91,63 @@ public class StatementNode {
 		return rtn;
 	}
 
+	/**\
+	 * Evaluates the tree according to the worled specified by the parameter.
+	 * @param curWorld World that we are using to evaluate it
+	 * @return
+	 */
 	public boolean evaluate(World curWorld) {
 		if(this.kindOfNode.equals("root")) {
 			return this.center.evaluate(curWorld);
 			
 		}
-		if(this.kindOfNode.equals("Scope")) {
+		if(this.kindOfNode.equals("Scope")) { //If the node is "For All" or "There Exists"
 			if(this.name.indexOf(Constants.FOR_ALL)!= -1) {
+				
 				String varName = this.name.substring(this.name.indexOf(Constants.FOR_ALL)+1);
 				String[] constants = StatementTree.uni.getConstantNames();
+				
 				for(int i = 0; i < constants.length; i++) {
-					//System.out.println("CONST NAME " + constants[i]);
+
+					//Adds the current constant to the list of constants for parameters
 					StatementTree.vars.add(StatementTree.vars.size(), constants[i]);
 					boolean truthVal = this.center.evaluate(curWorld);
+					
+					//Removes the current constant to prepare for the next one
 					StatementTree.vars.remove(constants[i]);
-				//	if(truthVal == false)
-					//	return false;
+					
 				}
 				return true;
 			} else if(this.name.indexOf(Constants.THERE_EXISTS)!=-1) {
 				String varName = this.name.substring(this.name.indexOf(Constants.FOR_ALL)+1);
 				String[] constants = StatementTree.uni.getConstantNames();
 				for(int i = 0; i < constants.length; i++) {
-					StatementTree.vars.remove(varName);
+					//Adds the current constant to the list of constants for parameters
 					StatementTree.vars.add(StatementTree.vars.size()-1, constants[i]);
 					boolean truthVal = this.center.evaluate(curWorld);
+					
+					//Removes the current constant to prepare for the next one
 					StatementTree.vars.remove(constants[i]);
-				//	if(truthVal == true)
-					//	return true;
+
 				}
 				return false;
 			}
 			
 		}
 	
-		if (this.function != null) {
+		if (this.function != null) { //If the node has a function specified
 			String[] params = new String[StatementTree.vars.size()];
+			
+			//Builds a String arr for the parameters
 			for(int i = 0; i < params.length; i++) {
 				params[i] = StatementTree.vars.get(i);
 			}
-			//System.out.println("PARAMS " + Arrays.toString(params));
+			
+			//Evaluates the function according to the world
 			return curWorld.evaluate(this.function,params);
 		}
 
-		//System.out.println(this.name.equals(Constants.IMPLIES));
+
 		if (this.name.charAt(0) == Constants.AND) {
 			boolean left = this.left.evaluate(curWorld);
 			boolean right = this.right.evaluate(curWorld);
@@ -183,8 +196,6 @@ public class StatementNode {
 
 	public static void main(String[] args) {
 		StatementTree.main(args);
-		//StatementNode test = new StatementNode("Test", "test");
-		////System.out.println(test);
 	}
 
 }

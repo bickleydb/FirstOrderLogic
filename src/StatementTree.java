@@ -35,26 +35,42 @@ public class StatementTree {
 		ArrayList<String> statements = new ArrayList<String>();
 		ArrayList<String> linkers = new ArrayList<String>();
 		translateToGoodFormat(uni,input);
-		//System.outprintln(input);
 		getStatementsAndLinkers(input, statements, linkers, uni);
 		StatementNode placeOnTree = root;
-		StatementNode currentRung = root;
+		
+		//This section adds the "For All" and "There Exists" to the tree
+		//Then moves it down to the actual meat of the tree
 		addScopes(statements, linkers, placeOnTree);
 		while (placeOnTree.center != null) {
 			placeOnTree = placeOnTree.center;
-			currentRung = placeOnTree;
 		}
+		
 		input = input.substring(input.indexOf(" ") +1);
+		
+		//Recursively builds the tree
 		placeOnTree.center = new StatementNode();
 		placeOnTree = placeOnTree.center;
 		buildTree(input, placeOnTree);
 	}
 	
+
+	/**
+	 * Recursively builds the tree, one node at a time. Has special instructions on how to insert a "not"
+	 * node, as they work slightly differently.
+	 * 
+	 * @param input
+	 * @param placeOnTree
+	 */
 	private void buildTree(String input, StatementNode placeOnTree) {
 		input = input.trim();
+		
+		//When parenthisized correctly, the "NOT" will have an index of 2 when it needs to be added.
 		if(input.charAt(2) == Constants.NOT) {
+			
 			input = input.substring(4);
 			input = "(" + input;
+			
+			//Input has everything after the "not" from the input in the correct syntax
 			placeOnTree.name=Character.toString(Constants.NOT);
 			placeOnTree.center = new StatementNode();
 			buildTree(input, placeOnTree.center);
@@ -66,6 +82,7 @@ public class StatementTree {
 			input = input.substring(1);
 		if(input.charAt(input.length()-1) == ')')
 			input = input.substring(0,input.length()-1);
+		
 		int startString = 1;
 		int numOpenParens = 1;
 		while( (startString < input.length() && !isSeperator(input.charAt(startString))) || (startString<input.length() && numOpenParens != 0 )) {
@@ -75,177 +92,32 @@ public class StatementTree {
 				numOpenParens--;
 			startString++;
 		}
+		
+		//If startString is at the end of the string, then it only consists of a function
 		if(startString >= input.length()-1) {
 			//System.outprintln(input);
 			placeOnTree.function = uni.getFunction(input.substring(0,input.indexOf("[")+1));
 			placeOnTree.name = placeOnTree.function.getFunctionName();
 			return;
 		}
+		
+		//Build the left and right of the tree.
 		placeOnTree.name = Character.toString(input.charAt(startString));
-		//System.outprintln(input.charAt(startString));
+
 		String left = input.substring(0,startString);
 		if(left.length()!= 0){
 			placeOnTree.left = new StatementNode();
 			buildTree(left,placeOnTree.left);
 		}
 		String right = input.substring(startString+1,input.length());
-		//System.outprintln( "RIGHT" + right);
 		if(right.length() != 0) {
 			placeOnTree.right = new StatementNode();
 			buildTree(right,placeOnTree.right);
 			return;
 		}
-		//System.outprintln("LEFT: " + left);
-		
-		
 		
 	}
 
-	/**
-	 * Method designed to recursively create the tree, where the first object in
-	 * the statement and linkers Arraylists is used to add onto the tree, after
-	 * the scopes are first added by a helper method.
-	 * 
-	 * @param statements
-	 *            List of Statements to be added-
-	 * @param linkers
-	 *            List of linking statements to be added
-	 * @param placeOnTree
-	 *            The current parent StatementNode
-	 * @param firstTime
-	 *           If this is the first time the method is called
-	 * @return Returns true of adding the node was successful.
-	 */
-	private boolean buildTree(ArrayList<String> statements,
-			ArrayList<String> linkers, StatementNode placeOnTree, int code) {
-		if(linkers.size() <= 0 && statements.size() <= 0) {
-			return true;
-		}
-		
-		switch(linkers.get(0)){
-		case("("):
-			break;
-		case(""+Constants.AND):
-			addLink(statements,linkers,placeOnTree,code,Constants.AND);
-			break;
-		case("" +Constants.OR):
-			addLink(statements,linkers,placeOnTree,code,Constants.OR);
-			break;
-		case("" + Constants.IFF):
-			addLink(statements,linkers,placeOnTree,code,Constants.IFF);
-			break;
-		case("" + Constants.IMPLIES):
-			addLink(statements,linkers,placeOnTree,code,Constants.IMPLIES);
-			break;
-		case("" + Constants.NOT):
-			addNot(statements,linkers,placeOnTree,code);
-			break;
-		}
-		
-		return true;
-		/*if (statements.size() == 0 && linkers.size() == 0)
-			return true;
-		if (statements.size() == 1 && linkers.size() == 0) {
-			////System.outprintln(statements.get(0));
-			placeOnTree.right = new StatementNode(this.uni.getFunction(statements.get(0)));
-			return true;
-		}
-		if (statements.size() ==1 && linkers.size() == 1) {
-			placeOnTree = new StatementNode(linkers.get(0),"Seperator");
-			//placeOnTree.right = new StatementNode(linkers.get(0), "Seperator");
-			placeOnTree.right = new StatementNode(this.uni.getFunction(statements.get(0)));
-			return true;
-		}
-		String link = linkers.get(0);
-		if (isSeperator(link.charAt(0))) {
-			if (code == Constants.BEGINNING_TREE) {
-				placeOnTree.center = new StatementNode(link, "Seperator");
-				placeOnTree.center.left = new StatementNode(this.uni.getFunction(statements.get(0)));
-				linkers.remove(0);
-				statements.remove(0);
-				return buildTree(statements, linkers, placeOnTree.center,
-						Constants.BUILDING_TREE);
-			} else if (code == Constants.BUILDING_TREE){
-				placeOnTree.right = new StatementNode(link, "Seperator");
-				placeOnTree.right.left = new StatementNode(this.uni.getFunction(statements.get(0)));
-				linkers.remove(0);
-				statements.remove(0);
-				return buildTree(statements, linkers, placeOnTree.right,
-						Constants.BUILDING_TREE);
-			} else {
-				placeOnTree.left = new StatementNode(link, "Seperator");
-				placeOnTree.left.left = new StatementNode(this.uni.getFunction(statements.get(0)));
-				linkers.remove(0);
-				statements.remove(0);
-				return buildTree(statements, linkers, placeOnTree.left, Constants.BUILDING_TREE);
-			}
-		}
-		if (link.equals("(")) {
-			statements.remove(0);
-			linkers.remove(0);
-			int linkIndex = linkers.size() - 1;
-			int statementIndex = statements.size() - 1;
-			
-			while (linkers.get(linkIndex) != ")") {
-				linkIndex--;
-			}
-			while (statements.get(statementIndex) != "") {
-				statementIndex--;
-			}
-			ArrayList<String> recurseStatement = new ArrayList<String>();
-			ArrayList<String> recurseLinkers = new ArrayList<String>();
-			for (int i = 0; i < statementIndex; i++) {
-				recurseStatement.add(statements.get(0));
-				statements.remove(0);
-			}
-			for (int i = 0; i < linkIndex; i++) {
-				recurseLinkers.add(linkers.get(0));
-				linkers.remove(0);
-			}
-			statements.remove(0);
-			linkers.remove(0);
-			StatementNode keep = placeOnTree;
-			buildTree(statements, linkers, placeOnTree, Constants.BUILDING_TREE);
-			keep = keep.right;
-			return buildTree(recurseStatement, recurseLinkers, keep,
-					Constants.SUB_STATEMENT);
-
-		}
-
-		if (link.equals(Constants.NOT)) {
-			placeOnTree.center = new StatementNode(
-					Character.toString(Constants.NOT), "Linker");
-			statements.remove(0);
-			linkers.remove(0);
-			return buildTree(statements, linkers, placeOnTree.center,
-					Constants.BEGINNING_TREE);
-
-		}
-
-		return true;*/
-	}
-
-	private void addNot(ArrayList<String> statements,
-			ArrayList<String> linkers, StatementNode placeOnTree, int code) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void addLink(ArrayList<String> statements,
-			ArrayList<String> linkers, StatementNode placeOnTree, int code,
-			char linkType) {
-			
-	}
-	
-	private void addNode(StatementNode addTo, StatementNode toAdd) {
-		if(addTo.left == null) {
-		  addTo.left = toAdd;
-		  return;
-		} else {
-			addTo.right = toAdd;
-		}
-		
-	}
 
 	/**
 	 * Helper method that adds all of the scopes of each variable and creates a
@@ -450,62 +322,7 @@ public class StatementTree {
 		return false;
 
 	}
-
-	// This section contains archaic code that I'm keeping around just in case.
-	// Ignore it.
-	/**
-	 * 
-	 * @param input
-	 * @return
-	 * 
-	 *         public static String[] getSeperators(String input) { int
-	 *         numSeperators = 0; for (int i = 0; i < input.length(); i++) { if
-	 *         (isSeperator(input.charAt(i))) numSeperators++; } String[] rtn =
-	 *         new String[numSeperators]; int index = 0; for (int i = 0; i <
-	 *         input.length(); i++) { if (isSeperator(input.charAt(i))) {
-	 *         rtn[index] = Constants.seperators[i]; rtn[index].trim(); index++;
-	 *         } } return rtn; }
-	 * 
-	 *         /**
-	 * 
-	 * @param input
-	 * @return
-	 * 
-	 *         private String[] getSections(String input) { String[] rtn = new
-	 *         String[getNumParts(input)]; int index = 0; int
-	 *         numOfNonClosedParen = 0; int firstOpenParen = -1; for (int i = 0;
-	 *         i < input.length(); i++) { if (input.charAt(i) == '(') { if
-	 *         (numOfNonClosedParen == 1) firstOpenParen = i;
-	 *         numOfNonClosedParen++; } if (input.charAt(i) == ')') {
-	 *         numOfNonClosedParen--; }
-	 * 
-	 *         if (numOfNonClosedParen == 0) { for (int t = 0; t <
-	 *         Constants.seperators.length; t++) { if
-	 *         (Character.toString(input.charAt(i)).equals(
-	 *         Constants.seperators[t])) { rtn[index] =
-	 *         input.substring(firstOpenParen + 1, i); rtn[index] =
-	 *         rtn[index].trim(); firstOpenParen = i + 1; index++; }
-	 * 
-	 *         } } } rtn[rtn.length - 1] = input.substring(firstOpenParen);
-	 *         rtn[rtn.length - 1] = rtn[rtn.length - 1].trim(); return rtn; }
-	 * 
-	 *         /**
-	 * 
-	 * @param input
-	 * @return
-	 * 
-	 *         private int getNumParts(String input) { int numOfNonClosedParen =
-	 *         0; int numParts = 0; for (int i = 0; i < input.length(); i++) {
-	 *         if (input.charAt(i) == '(') { numOfNonClosedParen++; } if
-	 *         (input.charAt(i) == ')') { numOfNonClosedParen--; }
-	 * 
-	 *         if (numOfNonClosedParen == 0) { for (int t = 0; t <
-	 *         Constants.seperators.length; t++) { if (input.substring(i, i +
-	 *         1).equals( Constants.seperators[t])) numParts++; } }
-	 * 
-	 *         } return numParts + 1; }
-	 */
-
+	
 	/**
 	 * Recursively creates a string representation of a tree starting at a given
 	 * Node.
@@ -540,21 +357,6 @@ public class StatementTree {
 			return getWidth(start.right, depth);
 		}
 		return depth + 1;
-	}
-
-	private String getIndentation(int depth, char location) {
-		String rtn = "";
-		for (int i = 0; i < depth * Constants.INDENT_SIZE; i++) {
-			rtn = rtn + "-";
-		}
-		if (location == 'l')
-			rtn = rtn.substring(Constants.INDENT_SIZE / 2);
-		if (location == 'r') {
-			for (int i = 0; i < Constants.INDENT_SIZE / 2; i++)
-				rtn = rtn + "-";
-		}
-		return rtn;
-
 	}
 	
 	public boolean evaluate() {
