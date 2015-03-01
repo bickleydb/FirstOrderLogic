@@ -20,6 +20,8 @@ public class Universe {
 	 */
 	public Universe() {
 		this("xml/universe.xml");
+		System.out.println(constants.size());
+		
 	}
 
 	/**

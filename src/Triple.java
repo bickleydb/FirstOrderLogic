@@ -46,7 +46,7 @@ public class Triple {
 		this.params = params;
 	}
 
-	public boolean isValue() {
+	public boolean getValue() {
 		return value;
 	}
 

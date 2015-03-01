@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Class that is used to determine if a given statement is consistent with the
@@ -9,14 +10,16 @@ import java.util.ArrayList;
  * 
  */
 public class StatementTree {
+	static ArrayList<String> vars;
 	StatementNode root;
-	Universe uni;
+	static Universe uni;
 
 	/**
 	 * Creates the root of a tree, from which everything will be built on.
 	 */
 	public StatementTree(Universe uni) {
 		root = new StatementNode("root", "root");
+		vars = new ArrayList<String>();
 		this.uni = uni;
 	}
 
@@ -32,7 +35,7 @@ public class StatementTree {
 		ArrayList<String> statements = new ArrayList<String>();
 		ArrayList<String> linkers = new ArrayList<String>();
 		translateToGoodFormat(uni,input);
-		System.out.println(input);
+		//System.outprintln(input);
 		getStatementsAndLinkers(input, statements, linkers, uni);
 		StatementNode placeOnTree = root;
 		StatementNode currentRung = root;
@@ -48,7 +51,21 @@ public class StatementTree {
 	}
 	
 	private void buildTree(String input, StatementNode placeOnTree) {
-		input = input.substring(1,input.length()-1);
+		input = input.trim();
+		if(input.charAt(2) == Constants.NOT) {
+			input = input.substring(4);
+			input = "(" + input;
+			placeOnTree.name=Character.toString(Constants.NOT);
+			placeOnTree.center = new StatementNode();
+			buildTree(input, placeOnTree.center);
+			return;
+			
+		}
+		
+		if(input.charAt(0) == '(')
+			input = input.substring(1);
+		if(input.charAt(input.length()-1) == ')')
+			input = input.substring(0,input.length()-1);
 		int startString = 1;
 		int numOpenParens = 1;
 		while( (startString < input.length() && !isSeperator(input.charAt(startString))) || (startString<input.length() && numOpenParens != 0 )) {
@@ -59,26 +76,26 @@ public class StatementTree {
 			startString++;
 		}
 		if(startString >= input.length()-1) {
-			System.out.println(input);
+			//System.outprintln(input);
 			placeOnTree.function = uni.getFunction(input.substring(0,input.indexOf("[")+1));
 			placeOnTree.name = placeOnTree.function.getFunctionName();
 			return;
 		}
 		placeOnTree.name = Character.toString(input.charAt(startString));
-		System.out.println(input.charAt(startString));
+		//System.outprintln(input.charAt(startString));
 		String left = input.substring(0,startString);
 		if(left.length()!= 0){
 			placeOnTree.left = new StatementNode();
 			buildTree(left,placeOnTree.left);
 		}
 		String right = input.substring(startString+1,input.length());
-		System.out.println( "RIGHT" + right);
+		//System.outprintln( "RIGHT" + right);
 		if(right.length() != 0) {
 			placeOnTree.right = new StatementNode();
 			buildTree(right,placeOnTree.right);
 			return;
 		}
-		System.out.println("LEFT: " + left);
+		//System.outprintln("LEFT: " + left);
 		
 		
 		
@@ -129,7 +146,7 @@ public class StatementTree {
 		/*if (statements.size() == 0 && linkers.size() == 0)
 			return true;
 		if (statements.size() == 1 && linkers.size() == 0) {
-			//System.out.println(statements.get(0));
+			////System.outprintln(statements.get(0));
 			placeOnTree.right = new StatementNode(this.uni.getFunction(statements.get(0)));
 			return true;
 		}
@@ -551,7 +568,7 @@ public class StatementTree {
 	public static void main(String[] args) {
 		Universe uni = new Universe();
 		StatementTree tree = new StatementTree(uni);
-		tree.buildTree(uni, "∀x  ((K[x])" + Constants.IMPLIES + "(P[x]))" + Constants.AND + "((Q[x])" + Constants.OR + "((T[x])" + Constants.IMPLIES + "(C[x])))");
+		tree.buildTree(uni, "∀x  (((K[x])" + Constants.OR + "(P[x]))" + Constants.AND + "((" + Constants.NOT + ")(Q[x])" + Constants.AND + "((T[x])" + Constants.AND + "(C[x])))");
 		System.out.println("EVALED: " + tree.evaluate());
 	}
 }

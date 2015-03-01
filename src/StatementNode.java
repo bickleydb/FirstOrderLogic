@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 /**
  * A node that is used to create a tree for the statement to be evaluated. Each
  * node contains the name of the node, a string that stores the kind of the
@@ -90,16 +92,49 @@ public class StatementNode {
 	}
 
 	public boolean evaluate(World curWorld) {
-		if(this.kindOfNode.equals("Scope")|| this.kindOfNode.equals("root")) {
+		if(this.kindOfNode.equals("root")) {
 			return this.center.evaluate(curWorld);
+			
+		}
+		if(this.kindOfNode.equals("Scope")) {
+			if(this.name.indexOf(Constants.FOR_ALL)!= -1) {
+				String varName = this.name.substring(this.name.indexOf(Constants.FOR_ALL)+1);
+				String[] constants = StatementTree.uni.getConstantNames();
+				for(int i = 0; i < constants.length; i++) {
+					//System.out.println("CONST NAME " + constants[i]);
+					StatementTree.vars.add(StatementTree.vars.size(), constants[i]);
+					boolean truthVal = this.center.evaluate(curWorld);
+					StatementTree.vars.remove(constants[i]);
+				//	if(truthVal == false)
+					//	return false;
+				}
+				return true;
+			} else if(this.name.indexOf(Constants.THERE_EXISTS)!=-1) {
+				String varName = this.name.substring(this.name.indexOf(Constants.FOR_ALL)+1);
+				String[] constants = StatementTree.uni.getConstantNames();
+				for(int i = 0; i < constants.length; i++) {
+					StatementTree.vars.remove(varName);
+					StatementTree.vars.add(StatementTree.vars.size()-1, constants[i]);
+					boolean truthVal = this.center.evaluate(curWorld);
+					StatementTree.vars.remove(constants[i]);
+				//	if(truthVal == true)
+					//	return true;
+				}
+				return false;
+			}
+			
 		}
 	
 		if (this.function != null) {
-			//System.out.println("Asdf");
-			return true;
+			String[] params = new String[StatementTree.vars.size()];
+			for(int i = 0; i < params.length; i++) {
+				params[i] = StatementTree.vars.get(i);
+			}
+			//System.out.println("PARAMS " + Arrays.toString(params));
+			return curWorld.evaluate(this.function,params);
 		}
 
-		System.out.println(this.name.equals(Constants.IMPLIES));
+		//System.out.println(this.name.equals(Constants.IMPLIES));
 		if (this.name.charAt(0) == Constants.AND) {
 			boolean left = this.left.evaluate(curWorld);
 			boolean right = this.right.evaluate(curWorld);
@@ -149,7 +184,7 @@ public class StatementNode {
 	public static void main(String[] args) {
 		StatementTree.main(args);
 		//StatementNode test = new StatementNode("Test", "test");
-		//System.out.println(test);
+		////System.out.println(test);
 	}
 
 }
