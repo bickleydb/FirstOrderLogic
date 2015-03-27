@@ -112,6 +112,7 @@ public class FunctionLoader {
 		Function newFunction = new Function();
 		newFunction.setFunctionName(cur.getAttribute("name"));
 		newFunction.setDomain(cur.getAttribute("domain"));
+		newFunction.setNumParams(Integer.parseInt(cur.getAttribute("args")));
 		//newFunction.setGoodConfigurations(getTruths(cur
 		//		.getElementsByTagName("true")));
 		return newFunction;

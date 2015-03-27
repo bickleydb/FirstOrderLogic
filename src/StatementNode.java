@@ -1,4 +1,8 @@
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+
+
 
 /**
  * A node that is used to create a tree for the statement to be evaluated. Each
@@ -93,39 +97,40 @@ public class StatementNode {
 
 	/**\
 	 * Evaluates the tree according to the worled specified by the parameter.
-	 * @param curWorld World that we are using to evaluate it
+	 * @param items World that we are using to evaluate it
 	 * @return
 	 */
-	public boolean evaluate(World curWorld) {
+	public boolean evaluate(HashSet<String>[] items) {
 		if(this.kindOfNode.equals("root")) {
-			return this.center.evaluate(curWorld);
+			return this.center.evaluate(items);
 			
 		}
 		if(this.kindOfNode.equals("Scope")) { //If the node is "For All" or "There Exists"
 			if(this.name.indexOf(Constants.FOR_ALL)!= -1) {
 				
-				String varName = this.name.substring(this.name.indexOf(Constants.FOR_ALL)+1);
 				String[] constants = StatementTree.uni.getConstantNames();
-				
 				for(int i = 0; i < constants.length; i++) {
-
 					//Adds the current constant to the list of constants for parameters
-					StatementTree.vars.add(StatementTree.vars.size(), constants[i]);
-					boolean truthVal = this.center.evaluate(curWorld);
-					
+					StatementTree.vars.put(this.name.substring(1), constants[i]);
+					if(this.center.evaluate(items) == false) {
+						StatementTree.vars.remove(constants[i]);
+						return false;
+					}
 					//Removes the current constant to prepare for the next one
 					StatementTree.vars.remove(constants[i]);
 					
 				}
 				return true;
 			} else if(this.name.indexOf(Constants.THERE_EXISTS)!=-1) {
-				String varName = this.name.substring(this.name.indexOf(Constants.FOR_ALL)+1);
 				String[] constants = StatementTree.uni.getConstantNames();
+				boolean tureOrFalse = false;
 				for(int i = 0; i < constants.length; i++) {
 					//Adds the current constant to the list of constants for parameters
-					StatementTree.vars.add(StatementTree.vars.size()-1, constants[i]);
-					boolean truthVal = this.center.evaluate(curWorld);
-					
+					StatementTree.vars.put(this.name.substring(1), constants[i]);
+					if(this.center.evaluate(items) == true) {
+						StatementTree.vars.remove(constants[i]);
+						return true;
+					}
 					//Removes the current constant to prepare for the next one
 					StatementTree.vars.remove(constants[i]);
 
@@ -136,21 +141,32 @@ public class StatementNode {
 		}
 	
 		if (this.function != null) { //If the node has a function specified
-			String[] params = new String[StatementTree.vars.size()];
-			
-			//Builds a String arr for the parameters
-			for(int i = 0; i < params.length; i++) {
-				params[i] = StatementTree.vars.get(i);
-			}
-			
-			//Evaluates the function according to the world
-			return curWorld.evaluate(this.function,params);
+			int paramIndex = StatementTree.functs.indexOf(this.function);
+			if(paramIndex == -1)
+				return false;
+			String params = parseParams(StatementTree.functs.get(paramIndex).getParams());
+		
+		    int index = 0;
+		    HashSet<String> curParams = items[paramIndex];
+		    Iterator it = curParams.iterator();
+		    //System.out.println("TRUE PARAMS FOR " + StatementTree.functs.get(paramIndex).getFunctionName());
+		
+		    ArrayList<String> trueParams = new ArrayList<String>();
+		    while(it.hasNext()) {
+		    	trueParams.add((String)it.next());
+		    }
+		    
+		   
+		    if(!trueParams.contains(params))
+		    	return false;
+		    
+			return true;
 		}
 
 
 		if (this.name.charAt(0) == Constants.AND) {
-			boolean left = this.left.evaluate(curWorld);
-			boolean right = this.right.evaluate(curWorld);
+			boolean left = this.left.evaluate(items);
+			boolean right = this.right.evaluate(items);
 			if (left && right) {
 				return true;
 			}
@@ -159,8 +175,8 @@ public class StatementNode {
 		}
 
 		if (this.name.charAt(0) == Constants.OR) {
-			boolean left = this.left.evaluate(curWorld);
-			boolean right = this.right.evaluate(curWorld);
+			boolean left = this.left.evaluate(items);
+			boolean right = this.right.evaluate(items);
 			if (left || right) {
 				return true;
 			}
@@ -168,8 +184,8 @@ public class StatementNode {
 		}
 
 		if (this.name.charAt(0) == Constants.IFF) {
-			boolean left = this.left.evaluate(curWorld);
-			boolean right = this.right.evaluate(curWorld);
+			boolean left = this.left.evaluate(items);
+			boolean right = this.right.evaluate(items);
 			if ((left && right) || (!left && !right)) {
 				return true;
 			}
@@ -178,8 +194,8 @@ public class StatementNode {
 		}
 
 		if (this.name.charAt(0)== Constants.IMPLIES){
-			boolean left = this.left.evaluate(curWorld);
-			boolean right = this.right.evaluate(curWorld);
+			boolean left = this.left.evaluate(items);
+			boolean right = this.right.evaluate(items);
 			if (!left || (left && right)) {
 				return true;
 			}
@@ -188,10 +204,29 @@ public class StatementNode {
 		}
 
 		if (this.name.charAt(0) == (Constants.NOT)) {
-			return !this.center.evaluate(curWorld);
+			return !this.center.evaluate(items);
 		}
 
 		return false;
+	}
+
+	private String parseParams(String params) {
+		int numCommas = 1;
+		for(int i = 0; i < params.length(); i++) {
+			if(params.charAt(i) == ',')
+				numCommas++;
+		}
+		String rtn = StatementTree.vars.get(params.substring(0, (params.indexOf(',') < 0) ? params.length() : params.indexOf(',')));
+		if(numCommas >= 2)
+			rtn = rtn+";";
+		params = params.substring((params.indexOf(',') < 0) ? params.length() : params.indexOf(',')+1);
+		for(int t = 1; t<numCommas; t++) {
+			rtn = rtn+StatementTree.vars.get(params.substring(0, (params.indexOf(',') < 0) ? params.length() : params.indexOf(',')));
+			if(t < numCommas-1)
+				rtn = rtn + ";";
+			params = params.substring((params.indexOf(',') < 0) ? params.length() : params.indexOf(','));
+		}
+		return rtn;
 	}
 
 	public static void main(String[] args) {

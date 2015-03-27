@@ -1,55 +1,36 @@
-import java.io.File;
 import java.util.*;
 
-import javax.swing.ComboBoxModel;
-
-/**
- * 
- * @author Daniel Bickley
- * 
- */
-public class World {
-
-	private ArrayList<Triple> truthVals;
+public class World implements Iterable<HashSet<String> []>{
+	public HashSet<String> [] trueForPredicate;
+	public int numPreds;
+	public ArgumentList [] argLists;
+	public static StringBuffer buffer = new StringBuffer(1000);
 	
-	//Basic Ctor while testing worlds. I figured it would be easiest to just hard code triples, with 
-	//functions, params, and the truth value. Examples are in the method.
-	public World() {
-		truthVals = new ArrayList<Triple>();
-		truthVals.add(new Triple(new Function("Drinks With"),new String[]{"Homer", "Bob"},true));
-		truthVals.add(new Triple(new Function("Friends With"),new String[]{"Homer", "Bob"},false));
-		truthVals.add(new Triple(new Function("Testing"),new String[]{"Homer"},false));
-		
-		
+	@SuppressWarnings("unchecked")
+	public World(ArgumentList ... argumentLists)
+	{
+		int np = argumentLists.length;
+		argLists = argumentLists;	// probably need deep copy
+		numPreds = np;
+		trueForPredicate = new HashSet [np];
+		for (int i=0; i<np; i++) {
+			trueForPredicate[i] = new HashSet<String>();
+		}
 	}
-
-	/**
-	 * Evaluates a given function according to the param array.
-	 * 
-	 * @param function
-	 * @param params
-	 * @return
-	 */
-	public boolean evaluate(Function function, String[] params) {
-		String functionName = function.functionName;
-		for(int i = 0; i < truthVals.size(); i++) {
-			Triple cur = truthVals.get(i);
-			//Grabs function
-			if(cur.getFunct().functionName.equals(function.functionName)) {
-				boolean ok = true;
-				//If all the params are the same for something in the world
-				for(int t = 0; t < cur.getParams().length; t++) {
-					if(!params[t].equals(cur.getParams()[t])) {
-						ok = false;
-					}
-				}
-				if(ok) { //IT will return the hard coded truth value
-					return cur.getValue();
-				}
-				
+	public Iterator<HashSet<String> []> iterator()
+	{
+		return new WorldIterator(this);
+	}
+	public String toString()
+	{
+		buffer.setLength(0);
+		for (int i=0; i<numPreds; i++) {
+			if (i != 0)
+				buffer.append("----------------");
+			for (String str : trueForPredicate[i]) {
+				buffer.append(str);
 			}
 		}
-		//If it doesnt match exactly, returns false (I don't know what you'd like to do in this scenario.
-		return false;
+		return buffer.toString();
 	}
 }

@@ -1,13 +1,10 @@
 <World>
 	<constant name="Homer" domain="person"></constant>
 	<constant name="Bob" domain="person"></constant>
-	<constant name="James" domain="person"></constant>
-	<constant name="Phil" domain="person"></constant>
-	<constant name="Dude" domain="person"></constant>
-	<constant name="SomeGuy" domain="person"></constant>
-	<constant name="John Jacob Jingerheimerschmitt" domain="person"></constant>
 
-	<function name = "P" args = "1" domain = "testing">
+
+
+	<function name = "P" args = "2" domain = "testing">
 		<true params= "Bob"></true>
 	</function>
 	
@@ -57,23 +54,23 @@
 		<true params = "YES IT CAN"></true>
 	</function>
 	
-	<function name = "K" args="1" domain = "damn">
+	<function name = "K" args="1" domain = "Stuff">
 		<true params = "x"></true>
 	</function>
 
-	<function name = "P" args="1" domain = "damn">
+	<function name = "P" args="1" domain = "Stuff">
 		<true params = "x"></true>
 	</function>
 
-	<function name = "Q" args="1" domain = "damn">
+	<function name = "Q" args="1" domain = "Stuff">
 		<true params = "x"></true>
 	</function>
 
-	<function name = "T" args="1" domain = "damn">
+	<function name = "T" args="1" domain = "Stuff">
 		<true params = "x"></true>
 	</function>
 
-	<function name = "C" args="1" domain = "damn">
+	<function name = "C" args="1" domain = "Stuff">
 		<true params = "x"></true>
 	</function>
 </World>

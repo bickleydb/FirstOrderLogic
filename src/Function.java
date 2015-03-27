@@ -1,4 +1,3 @@
-import java.util.Arrays;
 
 /**
  * Function class for use with FirstOrderLogic program. This class encapsulates
@@ -17,7 +16,7 @@ public class Function {
 
 	public String functionName;
 	public int numParams;
-	private String[] configurations;
+	private String parameters;
 	private String domain;
 
 	/**
@@ -29,7 +28,7 @@ public class Function {
 	public Function() {
 		this.functionName = "EMPTY";
 		this.domain = "EMPTY";
-		this.configurations = new String[0];
+		this.parameters = "";
 		numParams = 0;
 	}
 
@@ -80,12 +79,12 @@ public class Function {
 	 *            will return true for.
 	 */
 	public Function(String functionName, String domain,
-			String[] configurations) {
+			String parameters, int numParam) {
 		this();
 		this.functionName = functionName;
 		this.domain = domain;
-		this.configurations = configurations;
-		this.numParams = configurations.length;
+		this.parameters = parameters;
+		this.numParams = numParam;
 	}
 	
 
@@ -97,8 +96,6 @@ public class Function {
 	public String toString() {
 		String rtn = "";
 		rtn = rtn + this.functionName + getParamString() + "\n";
-		rtn = rtn + "Function will return true for: ";
-		rtn = rtn + "\n" + getConfig();
 		return rtn;
 
 	}
@@ -110,26 +107,6 @@ public class Function {
 	 */
 
 	/**
-	 * Returns a String representation of every parameter that the function will
-	 * return true for. The output of the method is in the format
-	 * 
-	 * [ Param 1A, Param 2A, ... , Param NA] [ Param 1B, Param 2B, ... , Param
-	 * NB] etc.
-	 * 
-	 * 
-	 * @return String list of parameters that the function will return true for.
-	 * 
-	 */
-	public String getConfig() {
-		String rtn = "";
-		for (int i = 0; i < configurations.length; i++) {
-			//Arrays.sort(goodConfigurations[i]);
-			rtn = rtn + (configurations[i]) + "\n";
-		}
-		return rtn;
-	}
-
-	/**
 	 * Creates a String representation of a list of parameters the function can
 	 * take, in variable form. For instance, if a Function has 3 params, this
 	 * method will return (x, y, z) if a Function has 1 param, this method will
@@ -137,17 +114,9 @@ public class Function {
 	 * 
 	 * @return String representation of the list of parameters of a function
 	 */
-	private String getParamString() {
-		String params = "(";
-		if (this.configurations.length == 0) {
-			return params + ")";
-		}
-		for (int i = 0; i < this.configurations.length - 1; i++) {
-			params = params
-					+ (char) ('z' - this.configurations.length + 1 + i)
-					+ ",";
-		}
-		params = params + "z)";
+	String getParamString() {
+		String params = "[";
+		params = params + this.parameters + "]"; 
 		return params;
 	}
 	
@@ -157,37 +126,54 @@ public class Function {
 
 	public static void main(String[] args) {
 		String[] params = {"Larry", "Bob", "Charlie" };
-		Function test = new Function("TEST", "test", params);
+		Function test = new Function("TEST", "test");
 		System.out.println(test.toString());
 
+	}
+	
+	public boolean equals(Object o) {
+		if(!(o instanceof Function))
+			return false;
+		Function other = (Function) o;
+		if(!this.functionName.equals(other.functionName))
+			return false;
+		if(this.numParams != other.numParams)
+			return false;
+		return true;
 	}
 
 	public String getFunctionName() {
 		return functionName;
 	}
 
-	public String[] getGoodConfigurations() {
-		return configurations;
-	}
-
 	public String getDomain() {
 		return domain;
+	}
+	
+	public String getParams() {
+		return this.parameters;
 	}
 
 	public void setFunctionName(String functionName) {
 		this.functionName = functionName;
 	}
-
-	public void setGoodConfigurations(String[] goodConfigurations) {
-		this.configurations = goodConfigurations;
-	}
 	
 	public int getNumParams() {
 		return this.numParams;
 	}
+	
+	public void setNumParams(int paramNum) {
+		this.numParams = paramNum;
+		
+	}
 
 	public void setDomain(String domain) {
 		this.domain = domain;
+	}
+
+	public void setParameters(String param) {
+		this.parameters = param;
+		
 	}
 
 }

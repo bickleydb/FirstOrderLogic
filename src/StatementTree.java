@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Class that is used to determine if a given statement is consistent with the
@@ -10,17 +11,26 @@ import java.util.HashMap;
  * 
  */
 public class StatementTree {
-	static ArrayList<String> vars;
+	static HashMap<String, String> vars;
+	static ArrayList<Function> functs;
 	StatementNode root;
-	static Universe uni;
+	static Universe uni = new Universe();
 
 	/**
 	 * Creates the root of a tree, from which everything will be built on.
 	 */
 	public StatementTree(Universe uni) {
 		root = new StatementNode("root", "root");
-		vars = new ArrayList<String>();
-		this.uni = uni;
+		vars = new HashMap<String, String>();
+		functs = new ArrayList<Function>();
+	}
+	
+	public static Function getFunctionFromList(Function fun) {
+		for(int i = 0; i < functs.size(); i++) {
+			if(fun.functionName.equals(functs.get(i).getFunctionName()))
+				return functs.get(i);
+		}
+		return null;
 	}
 
 	/**
@@ -96,7 +106,7 @@ public class StatementTree {
 		//If startString is at the end of the string, then it only consists of a function
 		if(startString >= input.length()-1) {
 			//System.outprintln(input);
-			placeOnTree.function = uni.getFunction(input.substring(0,input.indexOf("[")+1));
+			placeOnTree.function = StatementTree.getFunctionFromList(uni.getFunction(input.substring(0,input.indexOf("]")+1)));
 			placeOnTree.name = placeOnTree.function.getFunctionName();
 			return;
 		}
@@ -132,8 +142,6 @@ public class StatementTree {
 	private void addScopes(ArrayList<String> statements,
 			ArrayList<String> linkers, StatementNode placeOnTree) {
 		boolean moveToNextStep = true;
-		int statementIndex = 0;
-		int linkerIndex = 0;
 		while (moveToNextStep) {
 			moveToNextStep = false;
 			String cur = statements.get(0);
@@ -149,7 +157,6 @@ public class StatementTree {
 			}
 			if (found)
 				moveToNextStep = true;
-			statementIndex++;
 		}
 
 	}
@@ -232,13 +239,21 @@ public class StatementTree {
 						statements.add(input.substring(i, i + 2));
 						linkers.add("(");
 					} else {
-
 						if (isFunctionInWorld(input, i, uni) != null) {
 							int closeBracketIndex = i;
 							while (input.charAt(closeBracketIndex) != ']')
 								closeBracketIndex++;
+							
+							Function funct = uni.getFunction(input.substring(i,closeBracketIndex+1));
+							
+							if(!functs.contains(funct)) {
+								String relevantInfo = input.substring(i);
+								funct.setParameters(relevantInfo.substring(relevantInfo.indexOf("[")+1,closeBracketIndex-i));
+							    functs.add(funct);
+							}
 							statements.add(input.substring(i,
 									closeBracketIndex + 1));
+							
 							linkers.add("F");
 							i = closeBracketIndex;
 						} else {
@@ -334,7 +349,6 @@ public class StatementTree {
 	 * @return String representation of the subtree
 	 */
 	public String toString(StatementNode node, int depthFromRoot, int lrc) {
-		String rtn = "";
 		return "";
 	}
 
@@ -342,7 +356,6 @@ public class StatementTree {
 	 * Creates a simple string representation of the tree
 	 */
 	public String toString() {
-		int width = this.getWidth(root, 0);
 		String rtn = root.toString();
 		rtn = rtn + root.buildBar();
 		return rtn;
@@ -359,9 +372,35 @@ public class StatementTree {
 		return depth + 1;
 	}
 	
-	public boolean evaluate() {
-		World curWorld = new World();
-		return this.root.evaluate(curWorld);
+	@SuppressWarnings("unchecked")
+	public void evaluate() {
+		System.out.println("asdfasdfasdf");
+		ArgumentList[] args = new ArgumentList[functs.size()];
+		
+		for(int i = 0; i < functs.size(); i++) {
+			 ArrayList<ArrayList<String>> allParams = new ArrayList<ArrayList<String>>();
+			 for(int t = 0; t < functs.get(i).getNumParams(); t++) {
+			   ArrayList<String> lst = ArgumentList.createSet(uni.getConstantNames());
+			   allParams.add(lst);
+			 }
+			 ArrayList<String>[] parameters = new ArrayList[allParams.size()];
+			 for(int q = 0; q < parameters.length; q++) {
+				 parameters[q] = allParams.get(q);
+			 }
+			 args[i] = new ArgumentList(parameters);	
+		}
+		World world = new World(args);
+		
+		for (HashSet<String> [] items : world) {
+			System.out.print("TESTING WHEN");
+			for (HashSet<String> set : items) {
+				System.out.print(set);
+			   }
+			System.out.print(" IS TRUE ");
+				System.out.println(this.root.evaluate(items));
+		//	System.out.println();
+		}
+		
 	}
 
 	/**
@@ -370,8 +409,9 @@ public class StatementTree {
 	public static void main(String[] args) {
 		Universe uni = new Universe();
 		StatementTree tree = new StatementTree(uni);
-		tree.buildTree(uni, "∀x  (((K[x])" + Constants.OR + "(P[x]))" + Constants.AND + "((" + Constants.NOT + ")(Q[x])" + Constants.AND + "((T[x])" + Constants.AND + "(C[x])))");
-		System.out.println("EVALED: " + tree.evaluate());
+		tree.buildTree(uni, "∃x∃y  (P[x,y])"+ Constants.AND + "(G[x]))");
+		//tree.buildTree(uni, "∀x  (((K[x])" + Constants.OR + "(P[x]))" + Constants.AND + "((" + Constants.NOT + ")(Q[x])" + Constants.AND + "((T[x])" + Constants.AND + "(C[x])))");
+		tree.evaluate();
 	}
 }
 

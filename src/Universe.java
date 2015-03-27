@@ -1,8 +1,5 @@
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import javax.swing.ComboBoxModel;
 
 /**
  * 
@@ -45,8 +42,6 @@ public class Universe {
 	}
 	
 	public Function getFunction(String name) {
-		//System.out.println(name);
-		
 		String str = name.substring(0, name.indexOf("["));
 		str = str.trim();
 		//System.out.println(str);
