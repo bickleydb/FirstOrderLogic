@@ -1,0 +1,27 @@
+<Domain name = "Social">
+	<question text= "Everyone who is friends with Homer, drinks with Homer"
+		correctExpression = "BKARG"> </question>
+	<question text= "James is a friend of Homer." 
+		correctExpression = "TEST"></question>
+		
+	<constant name="HOMER"></constant>
+	<constant name="DAN"></constant>
+	<constant name="MIKE"></constant>
+	<constant name="JAMES"></constant>
+
+	<function name = "DrinksWtih" args = "2"></function>
+	<function name = "FriendsWith" args = "2"></function>
+</Domain>
+
+<Domain name = "school">
+	<question text= "Everyone who is a CSE Major studies with each other"
+		correctExpression = "BKARG"> </question>
+		
+	<constant name="DOUG"></constant>
+	<constant name="DAN"></constant>
+	<constant name="TYLER"></constant>
+	<constant name="CONNOR"></constant>
+
+	<function name = "CSEMajor" args = "1"></function>
+	<function name = "StudiesWith" args = "2"></function>
+</Domain>

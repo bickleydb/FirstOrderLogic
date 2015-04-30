@@ -72,6 +72,10 @@ public class Constants {
 	 */
 	public static final String Y_PRIME = "y\'";
 
+	
+	public static final String binary = Character.toString(AND)+
+		Character.toString(OR)+ Character.toString(IMPLIES)+
+		Character.toString(IFF);
 	/**
 	 * Array that contains all of the characters that are used to separate and
 	 * evaluate two different statements
@@ -92,11 +96,7 @@ public class Constants {
 	 * 
 	 */
 	public static final String[] scopes = { Character.toString(FOR_ALL),
-			Character.toString(THERE_EXISTS) };
-
-	public static final int  BEGINNING_TREE = 0;
-	public static final int BUILDING_TREE = 1;
-	public static final int  SUB_STATEMENT = 2;
+			Character.toString(THERE_EXISTS), Character.toString(Constants.NOT) };
 
 	
 }
