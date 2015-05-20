@@ -17,6 +17,7 @@ import java.util.Iterator;
  * 
  */
 public class StatementNode {
+	protected StatementTree tree;
 	protected String name;
 	protected String kindOfNode;
 	protected int numberItems = 0;
@@ -31,9 +32,10 @@ public class StatementNode {
 	 * @param name
 	 * @param kindOfNode
 	 */
-	public StatementNode(String name, String kindOfNode) {
+	public StatementNode(String name, String kindOfNode,StatementTree tree) {
 		this.name = name;
 		this.kindOfNode = kindOfNode;
+		this.tree = tree;
 	}
 
 	/**
@@ -42,14 +44,16 @@ public class StatementNode {
 	 * 
 	 * @param funct
 	 */
-	public StatementNode(Function funct) {
+	public StatementNode(Function funct, StatementTree contained) {
 		this.name = funct.getFunctionName();
 		this.kindOfNode = "function";
+		this.tree = contained;
 	}
 
-	public StatementNode() {
+	public StatementNode(StatementTree contained) {
 		this.name = "";
 		this.kindOfNode = "";
+		this.tree = contained;
 	}
 
 	/**
@@ -108,8 +112,7 @@ public class StatementNode {
 		if (this.kindOfNode.equals("Scope")) { // If the node is "For All" or
 												// "There Exists"
 			if (this.name.indexOf(Constants.FOR_ALL) != -1) {
-
-				String[] constants = StatementTree.uni.getConstantNames();
+				String[] constants = tree.curDomain.getConstantNames();
 				for (int i = 0; i < constants.length; i++) {
 					// Adds the current constant to the list of constants for
 					// parameters
@@ -125,8 +128,7 @@ public class StatementNode {
 				}
 				return true;
 			} else if (this.name.indexOf(Constants.THERE_EXISTS) != -1) {
-				String[] constants = StatementTree.uni.getConstantNames();
-				boolean tureOrFalse = false;
+				String[] constants = tree.curDomain.getConstantNames();
 				for (int i = 0; i < constants.length; i++) {
 					// Adds the current constant to the list of constants for
 					// parameters
@@ -181,9 +183,11 @@ public class StatementNode {
 			String compareString = "";
 			while(functParams.length()!= 0) {
 				String curParam = functParams.substring(0,functParams.indexOf(","));
+				curParam = curParam.trim();
 				if(!curParam.equals(curParam.toUpperCase())) {
 					curParam = StatementTree.vars.get(curParam);
 				}
+				compareString = compareString.trim();
 				compareString = compareString+curParam+";";
 				functParams = functParams.substring(functParams.indexOf(",")+1);
 			}

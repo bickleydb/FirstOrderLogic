@@ -22,7 +22,7 @@ import org.xml.sax.SAXException;
  * @author Daniel Bickley
  * 
  */
-public class FunctionLoader {
+public class DomainReader {
 
 	private File XMLFile;
 	private DocumentBuilderFactory fact;
@@ -37,7 +37,7 @@ public class FunctionLoader {
 	 * 
 	 * @param fileName
 	 */
-	public FunctionLoader(String fileName) {
+	public DomainReader(String fileName) {
 		XMLFile = new File(fileName);
 		fact = DocumentBuilderFactory.newInstance();
 		try {
@@ -118,6 +118,12 @@ public class FunctionLoader {
 		return newFunction;
 
 	}
+	
+	private String parseQuestionElements(Element cur) {
+		String questionTxt = cur.getAttribute("text");
+		String goodExpr = cur.getAttribute("correctExpression");
+		return questionTxt+"!"+goodExpr;
+	}
 
 	/*
 	 * Returns a string representation of every combination of parameters that
@@ -161,20 +167,52 @@ public class FunctionLoader {
 		NodeList functions = doc.getElementsByTagName("function");
 		return functions;
 	}
+	
+	public ArrayList<Domain> getAllDomains() {
+		ArrayList<Domain> domains = new ArrayList<Domain>();
+	    NodeList information = doc.getElementsByTagName("Domain");
+	    for(int i = 0; i < information.getLength(); i++) {
+	    	
+	    	ArrayList<Const> domainConsts = new ArrayList<Const>();
+	    	ArrayList<Function> domainFuncts = new ArrayList<Function>();
+	    	ArrayList<String> domainQuests = new ArrayList<String>();
+	    	
+	    	Element e = (Element)information.item(i);
+	    	
+	    	NodeList constants = e.getElementsByTagName("constant");
+	    	NodeList functs = e.getElementsByTagName("function");
+	    	NodeList quests = e.getElementsByTagName("question");
+	    	
+	    	for(int t = 0; t < functs.getLength(); t++) {
+	    		domainFuncts.add(parseFunctionElements((Element) functs.item(t)));
+	    	}
+	    	for(int t = 0; t < constants.getLength(); t++) {
+	    		domainConsts.add(parseConstantElements((Element) constants.item(t)));
+	    	}
+	    	for(int t = 0; t < quests.getLength(); t++) {
+	    		domainQuests.add(parseQuestionElements((Element) quests.item(t)));
+	    	}
+	    	domains.add(new Domain(e.getAttribute("name"),domainFuncts,domainConsts,domainQuests));
+	    	
+	    }
+	    
+	    return domains;
+	}
 
 	/**
 	 * For debugging of the class.
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		FunctionLoader funct = new FunctionLoader("src/world1.xml");
-		ArrayList<Function> fun = funct.readFunctions();
-		ArrayList<Const> consts = funct.readConstants();
-		for (int i = 0; i < fun.size(); i++)
-			System.out.println(fun.get(i));
-		for (int i = 0; i < consts.size(); i++) {
-			System.out.println(consts.get(i));
-		}
+		DomainReader funct = new DomainReader("xml/Domain1.xml");
+		funct.getAllDomains();
+		//ArrayList<Function> fun = funct.readFunctions();
+		//ArrayList<Const> consts = funct.readConstants();
+		//for (int i = 0; i < fun.size(); i++)
+		//	System.out.println(fun.get(i));
+		//for (int i = 0; i < consts.size(); i++) {
+		//	System.out.println(consts.get(i));
+		//}
 	}
 
 }

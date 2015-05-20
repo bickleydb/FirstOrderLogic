@@ -35,29 +35,40 @@ public class PredicateConstantListener implements ActionListener {
 	 * changes the available functions and constants, as well as the world the
 	 * user input will be tested against.
 	 */
-	private void changeWorld() {
-		JComboBox<String> worlds = gui.worldSelection;
-		int newSelection = worlds.getSelectedIndex();
+	private void changeDomain() {
+		JComboBox<String> domains = gui.domainList;
+		int newSelection = domains.getSelectedIndex();
 
 		JComboBox<String> functions = gui.functions;
 		JComboBox<String> constants = gui.constants;
+		JComboBox<String> prompt = gui.prompt;
+		
+		gui.curDomain = gui.domains.get(newSelection);
 
 		functions.removeActionListener(this);
 		constants.removeActionListener(this);
+		prompt.removeActionListener(this);
+		
 
 		functions.removeAllItems();
 		constants.removeAllItems();
+		prompt.removeAllItems();
 
-		String[] newFunctions = gui.uni.getFunctionNames();
+		String[] newFunctions = gui.curDomain.getFunctionNames();
 		for (int i = 0; i < newFunctions.length; i++)
 			functions.addItem(newFunctions[i]);
 
-		String[] newConstants = gui.uni.getConstantNames();
+		String[] newConstants = gui.curDomain.getConstantNames();
 		for (int i = 0; i < newConstants.length; i++)
 			constants.addItem(newConstants[i]);
 
+		String[] newPrompts = gui.curDomain.getQuestionNames();
+		for(int i = 0; i < newPrompts.length; i++)
+			prompt.addItem(newPrompts[i]);
+		
 		functions.addActionListener(this);
 		constants.addActionListener(this);
+		prompt.addActionListener(this);
 
 	}
 
@@ -109,9 +120,9 @@ public class PredicateConstantListener implements ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 		@SuppressWarnings("unchecked")
 		JComboBox<String> pressed = (JComboBox<String>) arg0.getSource();
-		if (pressed.equals(gui.worldSelection)) {
-			changeWorld();
-			return;
+		
+		if(pressed.equals(gui.domainList)) {
+			changeDomain();
 		}
 
 		if (pressed.equals(gui.functions)) {

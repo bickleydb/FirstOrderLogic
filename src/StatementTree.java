@@ -11,18 +11,22 @@ import java.util.HashSet;
  * 
  */
 public class StatementTree {
-	static HashMap<String, String> vars;
-	static ArrayList<Function> functs;
-	StatementNode root;
-	static Universe uni = new Universe();
+	public Domain curDomain;
+	
+	public static HashMap<String, String> vars;
+	public static ArrayList<Function> functs;
+	
+	public StatementNode root;
+	
 
 	/**
 	 * Creates the root of a tree, from which everything will be built on.
 	 */
-	public StatementTree(Universe uni) {
-		root = new StatementNode("root", "root");
+	public StatementTree(Domain dom) {
+		this.curDomain = dom;
+		root = new StatementNode("root", "root",this);
 		vars = new HashMap<String, String>();
-		functs = new ArrayList<Function>();
+		functs = dom.getFunctions();
 	}
 
 	public static Function getFunctionFromList(Function fun) {
@@ -41,13 +45,13 @@ public class StatementTree {
 	 * @param input
 	 *            The statement that will be evaluated
 	 */
-	public void buildTree(Universe uni, String input) {
+	public void buildTree(String input) {
 		ArrayList<String> statements = new ArrayList<String>();
 		ArrayList<String> linkers = new ArrayList<String>();
 		//translateToGoodFormat(uni, input);
-		getStatementsAndLinkers(input, statements, linkers, uni);
+		//getStatementsAndLinkers(input, statements, linkers, curDomain2);
 		StatementNode placeOnTree = root;
-        placeOnTree.center = new StatementNode();
+        placeOnTree.center = new StatementNode(this);
 
 		// This section adds the "For All" and "There Exists" to the tree
 		// Then moves it down to the actual meat of the tree
@@ -68,11 +72,11 @@ public class StatementTree {
 		input = input.trim();
 		if(input.charAt(0)==Constants.NOT && (input.charAt(1)==Constants.FOR_ALL || input.charAt(1) == Constants.THERE_EXISTS)) {
 			placeOnTree.name = Character.toString(Constants.NOT);
-			placeOnTree.center = new StatementNode();
+			placeOnTree.center = new StatementNode(this);
 			placeOnTree = placeOnTree.center;
 			placeOnTree.name = input.substring(1, 3);
 			placeOnTree.kindOfNode = "Scope";
-			placeOnTree.center = new StatementNode();
+			placeOnTree.center = new StatementNode(this);
 			betterBuildTree(input.substring(3),placeOnTree.center);
 			return;
 		}
@@ -80,7 +84,7 @@ public class StatementTree {
 		if(input.charAt(0) == Constants.FOR_ALL || input.charAt(0) == Constants.THERE_EXISTS) {
 		   placeOnTree.name = input.substring(0,2);
 		   placeOnTree.kindOfNode = "Scope";
-		   placeOnTree.center = new StatementNode();
+		   placeOnTree.center = new StatementNode(this);
 		   betterBuildTree(input.substring(2),placeOnTree.center);
 		   return;
 		}
@@ -107,11 +111,11 @@ public class StatementTree {
 				highPrecendence++;
 				placeOnTree.name = Character.toString(input.charAt(position));
 				String leftPart = input.substring(0,position);
-				placeOnTree.left = new StatementNode();
+				placeOnTree.left = new StatementNode(this);
 				betterBuildTree(leftPart,placeOnTree.left);
 				String rightPart = input.substring(position+1);
-				placeOnTree.right = new StatementNode();
-				betterBuildTree(leftPart,placeOnTree.right);
+				placeOnTree.right = new StatementNode(this);
+				betterBuildTree(rightPart,placeOnTree.right);
 				return;
 			}
 			
@@ -148,7 +152,7 @@ public class StatementTree {
 				
 				if(input.charAt(position) == Constants.NOT) {
 					placeOnTree.name = Character.toString(Constants.NOT);
-					placeOnTree.center = new StatementNode();
+					placeOnTree.center = new StatementNode(this);
 					betterBuildTree(input.substring(position+1),placeOnTree.center);
 					return;
 				}
@@ -157,10 +161,10 @@ public class StatementTree {
 					highPrecendence++;
 					placeOnTree.name = Character.toString(input.charAt(position));
 					String leftPart = input.substring(0,position);
-					placeOnTree.left = new StatementNode();
+					placeOnTree.left = new StatementNode(this);
 					betterBuildTree(leftPart,placeOnTree.left);
 					String rightPart = input.substring(position+1);
-					placeOnTree.right = new StatementNode();
+					placeOnTree.right = new StatementNode(this);
 					betterBuildTree(leftPart,placeOnTree.right);
 					return;
 				}
@@ -173,7 +177,7 @@ public class StatementTree {
 		input = input.trim();
 		String functName = input.substring(0,input.indexOf("[")+1);
 		placeOnTree.name = input;
-		placeOnTree.function = this.uni.getFunction(functName);
+		placeOnTree.function = this.curDomain.getFunction(functName);
 		return;
 		
 	}
@@ -191,7 +195,7 @@ public class StatementTree {
 		if(input.charAt(0) == Constants.THERE_EXISTS) {
 			placeOnTree.name = input.substring(0,2);
 			placeOnTree.kindOfNode = "Scope";
-			placeOnTree.center = new StatementNode();
+			placeOnTree.center = new StatementNode(this);
 			
 			input = input.substring(2);
 			buildTree(input,placeOnTree.center);
@@ -201,7 +205,7 @@ public class StatementTree {
 		if(input.charAt(0) == Constants.FOR_ALL) {
 			placeOnTree.name = input.substring(0,2);
 			placeOnTree.kindOfNode = "Scope";
-			placeOnTree.center = new StatementNode();
+			placeOnTree.center = new StatementNode(this);
 			input = input.substring(2);
 			buildTree(input,placeOnTree.center);
 			return;
@@ -216,7 +220,7 @@ public class StatementTree {
 			// Input has everything after the "not" from the input in the
 			// correct syntax
 			placeOnTree.name = Character.toString(Constants.NOT);
-			placeOnTree.center = new StatementNode();
+			placeOnTree.center = new StatementNode(this);
 			buildTree(input, placeOnTree.center);
 			return;
 
@@ -243,7 +247,7 @@ public class StatementTree {
 		// a function
 		if (startString >= input.length() - 1) {
 			// System.outprintln(input);
-			placeOnTree.function = StatementTree.getFunctionFromList(uni
+			placeOnTree.function = StatementTree.getFunctionFromList(curDomain
 					.getFunction(input.substring(0, input.indexOf("]") + 1)));
 			placeOnTree.name = placeOnTree.function.getFunctionName();
 			return;
@@ -254,12 +258,12 @@ public class StatementTree {
 
 		String left = input.substring(0, startString);
 		if (left.length() != 0) {
-			placeOnTree.left = new StatementNode();
+			placeOnTree.left = new StatementNode(this);
 			buildTree(left, placeOnTree.left);
 		}
 		String right = input.substring(startString + 1, input.length());
 		if (right.length() != 0) {
-			placeOnTree.right = new StatementNode();
+			placeOnTree.right = new StatementNode(this);
 			buildTree(right, placeOnTree.right);
 			return;
 		}
@@ -285,7 +289,7 @@ public class StatementTree {
 			boolean found = false;
 			for (int i = 0; i < cur.length(); i++) {
 				if (isScope(cur.charAt(i))) {
-					placeOnTree.center = new StatementNode(cur, "Scope");
+					placeOnTree.center = new StatementNode(cur, "Scope",null);
 					placeOnTree = placeOnTree.center;
 					found = true;
 					statements.remove(0);
@@ -330,7 +334,7 @@ public class StatementTree {
 	 *         name if it does match with something in the world.
 	 */
 	private String isFunctionInWorld(String input, int index, Universe uni) {
-		String[] functionNames = uni.getFunctionWithoutParams();
+		String[] functionNames = curDomain.getFunctionWithoutParams();
 		for (int t = 0; t < functionNames.length; t++) {
 			int size = functionNames[t].length();
 			if (index + size < input.length()) {
@@ -392,7 +396,7 @@ public class StatementTree {
 						int closeBracketIndex = i;
 						while (input.charAt(closeBracketIndex) != ']')
 							closeBracketIndex++;
-						Function funct = uni.getFunction(input.substring(i,
+						Function funct = curDomain.getFunction(input.substring(i,
 								closeBracketIndex + 1));
 						if (!functs.contains(funct)) {
 							String relevantInfo = input.substring(i);
@@ -522,13 +526,18 @@ public class StatementTree {
 		return depth + 1;
 	}
 
-	public static void evaluate(StatementTree... statements) {
+	public static String evaluate(StatementTree... statements) {
 		int numEval = 0;
+		for(int i = 0; i < statements.length-1; i++) {
+			if(!statements[i].curDomain.equals(statements[i+1].curDomain))
+				System.err.println("YOU DUN GOOFED");
+		}
+		
 		ArgumentList[] args = new ArgumentList[functs.size()];
 		for (int i = 0; i < functs.size(); i++) {
 			ArrayList<ArrayList<String>> allParams = new ArrayList<ArrayList<String>>();
 			for (int t = 0; t < functs.get(i).getNumParams(); t++) {
-				ArrayList<String> lst = ArgumentList.createSet(uni
+				ArrayList<String> lst = ArgumentList.createSet(statements[0].curDomain
 						.getConstantNames());
 				allParams.add(lst);
 			}
@@ -542,20 +551,38 @@ public class StatementTree {
 
 		for (HashSet<String>[] items : world) {
 			//System.out.print("TESTING WHEN");
-			for (HashSet<String> set : items) {
-				System.out.print(set);
-			}
+			//for (HashSet<String> set : items) {
+		//		System.out.print(set);
+			//}
 			numEval++;
-			 System.out.print(" IS TRUE ");
-			for (int i = 0; i < statements.length; i++) {
-				System.out.print(i + "th statement returned: "
-						+ statements[i].root.evaluate(items) + " ");
+			 //System.out.println(" IS TRUE ");
+			 //System.out.println(numEval);
+			 boolean same = statements[0].root.evaluate(items);
+		     boolean second = statements[1].root.evaluate(items);
+		    // System.out.println(numEval);
+		     if(same != second) {
+		    	 System.err.println(numEval);
+		    	 System.exit(0);
+		    	 String badWorld = "";
+		    	 for (HashSet<String> set : items) {
+		    		   for(String part : set) {
+		    			   badWorld = badWorld + part;
+		    		   }
+					}
+		    	 return "Your test failed when [" + badWorld + "] is true.";
+		     }
+			//	System.out.println("First Statement: "
+			//			+ statements[0].root.evaluate(items) + " ");
+
+			//	System.out.println("True Statement Statement: "
+					//	+ statements[1].root.evaluate(items) + " ");
 				//(statements[i].root.evaluate(items))
 				
-			}
-			System.out.println();
+			//}
+			//System.out.println();
 
 		}
+		return "All tests passed. The statements are equivalent.";
 	}
 
 	@SuppressWarnings("unchecked")
@@ -568,16 +595,16 @@ public class StatementTree {
 	 * For debugging
 	 */
 	public static void main(String[] args) {
-		Universe uni = new Universe();
-		StatementTree tree = new StatementTree(uni);
-		StatementTree tree2 = new StatementTree(uni);
+		/*Domain dom1 = new Domain();
+		StatementTree tree = new StatementTree(curDomain);
+		StatementTree tree2 = new StatementTree(curDomain);
 		System.out.println(Constants.FOR_ALL);
-		tree.buildTree(uni, "∀x P[x,HOMER]");
-		tree2.buildTree(uni,"∀x "+Constants.NOT+"(P[x,HOMER])");
+		tree.buildTree(curDomain, "∀x P[x,HOMER]");
+		tree2.buildTree(curDomain,"∀x "+Constants.NOT+"(P[x,HOMER])");
 		//tree2.buildTree(uni, "∀x  ((" + Constants.NOT + ")P[x])");
 		// tree.buildTree(uni, "∀x  (((K[x])" + Constants.OR + "(P[x]))" +
 		// Constants.AND + "((" + Constants.NOT + ")(Q[x])" + Constants.AND +
 		// "((T[x])" + Constants.AND + "(C[x])))");
-		StatementTree.evaluate(tree,tree2);
+		StatementTree.evaluate(tree,tree2);*/
 	}
 }

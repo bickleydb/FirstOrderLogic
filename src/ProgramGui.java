@@ -31,16 +31,20 @@ public class ProgramGui extends JFrame {
 	protected JComboBox<String> functions;
 	protected JComboBox<String> worldSelection;
 	protected JComboBox<String> constants;
+	protected JComboBox<String> domainList;
+	protected JComboBox<String> prompt;
 
 	protected JTextField texts;
 	protected JTextArea out;
-	protected FunctionLoader reader;
+	protected DomainReader reader;
 	protected String fileName;
 
 	private TextButtonListener text;
 	private InputDocumentListener heyListen;
 	private PredicateConstantListener placePredicate;
-	public static Universe uni;
+	public ArrayList<Domain> domains;
+	public static Domain curDomain;
+	
 
 	/**
 	 * Basic constructor that initializes everything required for the GUI to
@@ -48,7 +52,8 @@ public class ProgramGui extends JFrame {
 	 * test the user's input.
 	 */
 	public ProgramGui() {
-		uni = new Universe();
+		domains = Domain.readDomains();
+		curDomain = domains.get(0);
 		instantiateVariables();
 		chooseFeedbackFolder();
 		this.setSize(500, 500);
@@ -90,25 +95,32 @@ public class ProgramGui extends JFrame {
 	private void createRelationPanel() {
 		JPanel pane = new JPanel();
 
-		JLabel worldLabel = new JLabel("Worlds");
+		JLabel domainLabel = new JLabel("Domains");
 		JLabel functionLabel = new JLabel("Functions");
 		JLabel constantLabel = new JLabel("Constants");
 
-		worldLabel.setAlignmentX(CENTER_ALIGNMENT);
+
+		domainLabel.setAlignmentX(CENTER_ALIGNMENT);
 		constantLabel.setAlignmentX(CENTER_ALIGNMENT);
 		functionLabel.setAlignmentX(CENTER_ALIGNMENT);
 
 		pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
 
-		functions = new JComboBox<String>(uni.getFunctionNames());
+		functions = new JComboBox<String>(curDomain.getFunctionNames());
 		functions.addActionListener(placePredicate);
-		constants = new JComboBox<String>(uni.getConstantNames());
+		constants = new JComboBox<String>(curDomain.getConstantNames());
 		constants.addActionListener(placePredicate);
+		domainList = new JComboBox<String>(Domain.domainNames(this.domains));
+		domainList.addActionListener(placePredicate);
+		
 
+		pane.add(domainLabel);
+		pane.add(domainList);
 		pane.add(functionLabel);
 		pane.add(functions);
 		pane.add(constantLabel);
 		pane.add(constants);
+		
 
 		this.add(pane, BorderLayout.WEST);
 
@@ -131,6 +143,7 @@ public class ProgramGui extends JFrame {
 		JButton or = new JButton(Character.toString(Constants.OR));
 		JButton impliles = new JButton(Character.toString(Constants.IMPLIES));
 		JButton iff = new JButton(Character.toString(Constants.IFF));
+		JButton not = new JButton(Character.toString(Constants.NOT));
 		JButton x = new JButton(Character.toString(Constants.X));
 		JButton y = new JButton(Character.toString(Constants.Y));
 		JButton xPrime = new JButton(Constants.X_PRIME);
@@ -142,6 +155,7 @@ public class ProgramGui extends JFrame {
 		chars.add(or);
 		chars.add(impliles);
 		chars.add(iff);
+		chars.add(not);
 		chars.add(x);
 		chars.add(y);
 		chars.add(xPrime);
@@ -153,6 +167,7 @@ public class ProgramGui extends JFrame {
 		or.addActionListener(text);
 		impliles.addActionListener(text);
 		iff.addActionListener(text);
+		not.addActionListener(text);
 		x.addActionListener(text);
 		y.addActionListener(text);
 		xPrime.addActionListener(text);
@@ -164,6 +179,7 @@ public class ProgramGui extends JFrame {
 		or.setName(Character.toString(Constants.OR) + " ");
 		impliles.setName(Character.toString(Constants.IMPLIES) + " ");
 		iff.setName(Character.toString(Constants.IFF) + " ");
+		not.setName(Character.toString(Constants.NOT) + " ");
 		x.setName(Character.toString(Constants.X) + " ");
 		y.setName(Character.toString(Constants.Y) + " ");
 		xPrime.setName(Constants.X_PRIME + " ");
@@ -203,16 +219,13 @@ public class ProgramGui extends JFrame {
 		JPanel promptAndOutput = new JPanel();
 		promptAndOutput.setLayout(new BorderLayout());
 		
-		
-		
 		JTextField input = new JTextField();
-		JPanel prompt = new JPanel();
+		String[] questions = this.curDomain.getQuestionNames();
+		prompt = new JComboBox<String>(questions);
+		prompt.addActionListener(placePredicate);
+	
 		JLabel promptName = new JLabel("Prompt");
-		prompt.setLayout(new BorderLayout());
-		prompt.add(promptName, BorderLayout.NORTH);
-		prompt.add(input,BorderLayout.CENTER);
 		promptAndOutput.add(prompt,BorderLayout.NORTH);
-		
 		
 		JPanel output = new JPanel();
 		output.setLayout(new BorderLayout());

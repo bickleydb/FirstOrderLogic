@@ -75,14 +75,24 @@ public class TextButtonListener implements ActionListener {
 		compOutput.setCaretPosition(0);
 		JTextField in = gui.texts;
 		String toAdd = in.getText();
+		
+		
+		StatementTree tree1 = new StatementTree(gui.curDomain);
+		StatementTree tree2 = new StatementTree(gui.curDomain);
+		
+		tree1.buildTree(toAdd);
+		tree2.buildTree(gui.curDomain.expressions.get(gui.curDomain.questions.indexOf((String)gui.prompt.getSelectedItem())));
+		
+		String feedback = "\n " + StatementTree.evaluate(tree1,tree2);
+		
 		compOutput.setText("");
 		compOutput.setCaretPosition(0);
 		if (toAdd.indexOf("Enter Your Statement Here") != -1)
 			return;
 
-		StatementTree userInput = new StatementTree(gui.uni);
+		StatementTree userInput = new StatementTree(gui.curDomain);
 		
-		String feedback = "\n     Nice Try!\r\n";
+		
 		compOutput.setText(compOutput.getText() + "\n" + in.getText()
 				+ feedback);
 		in.setText("Enter Your Statement Here\t");
